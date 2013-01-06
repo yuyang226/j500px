@@ -1,5 +1,6 @@
 package com.github.yuyang226.j500px.photos;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +12,10 @@ import com.github.yuyang226.j500px.users.User;
  * @see http://developer.500px.com/docs/formats#photo_formats
  *
  */
-public class Photo {
+public class Photo implements Serializable {
 
+	private static final long serialVersionUID = 548829495518564119L;
+	
 	private int id;
 	private String name;
 	private String description;
@@ -30,6 +33,8 @@ public class Photo {
 	private int commentsCount;
 	private int viewsCount;
 	private double rating;
+	private double highestRating;
+	private Date highestRatingDate;
 	
 	private boolean privacy;
 	private boolean nsfw;
@@ -39,6 +44,12 @@ public class Photo {
 	private int height;
 	
 	private List<ImageUrl> imageUrls = new ArrayList<ImageUrl>();
+	private List<Comment> comments = new ArrayList<Comment>();
+	
+	private boolean forSale;
+	private int salesCount;
+	private Date forSaleDate;
+	
 	
 	/**
 	 * Status of the photo in the system, integer. An active photo always has the status of 1.
@@ -287,6 +298,34 @@ public class Photo {
 	}
 
 	/**
+	 * @return the highestRating
+	 */
+	public double getHighestRating() {
+		return highestRating;
+	}
+
+	/**
+	 * @param highestRating the highestRating to set
+	 */
+	public void setHighestRating(double highestRating) {
+		this.highestRating = highestRating;
+	}
+
+	/**
+	 * @return the highestRatingDate
+	 */
+	public Date getHighestRatingDate() {
+		return highestRatingDate;
+	}
+
+	/**
+	 * @param highestRatingDate the highestRatingDate to set
+	 */
+	public void setHighestRatingDate(Date highestRatingDate) {
+		this.highestRatingDate = highestRatingDate;
+	}
+
+	/**
 	 * @return the status
 	 */
 	public int getStatus() {
@@ -410,6 +449,62 @@ public class Photo {
 	 */
 	public void setImageUrls(List<ImageUrl> imageUrls) {
 		this.imageUrls = imageUrls;
+	}
+	
+	/**
+	 * @return the comments
+	 */
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	/**
+	 * @param comments the comments to set
+	 */
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
+	
+	/**
+	 * @return the forSale
+	 */
+	public boolean isForSale() {
+		return forSale;
+	}
+
+	/**
+	 * @param forSale the forSale to set
+	 */
+	public void setForSale(boolean forSale) {
+		this.forSale = forSale;
+	}
+
+	/**
+	 * @return the salesCount
+	 */
+	public int getSalesCount() {
+		return salesCount;
+	}
+
+	/**
+	 * @param salesCount the salesCount to set
+	 */
+	public void setSalesCount(int salesCount) {
+		this.salesCount = salesCount;
+	}
+
+	/**
+	 * @return the forSaleDate
+	 */
+	public Date getForSaleDate() {
+		return forSaleDate;
+	}
+
+	/**
+	 * @param forSaleDate the forSaleDate to set
+	 */
+	public void setForSaleDate(Date forSaleDate) {
+		this.forSaleDate = forSaleDate;
 	}
 
 	/* (non-Javadoc)

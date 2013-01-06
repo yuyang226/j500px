@@ -4,11 +4,12 @@
 package com.github.yuyang226.j500px.photos;
 
 /**
+ * Numerical size of the image to link to, 1 being the smallest and 4 being the largest.
  * @author yayu
  *
  */
 public enum ImageSize {
-	UNKOWN(-1), THUMNAIL(2), LARGE(4);
+	UNKOWN(-1), SMALL(1), THUMNAIL(2), LARGE(3), LARGEST(4);
 
 	private int size;
 

@@ -12,9 +12,9 @@ public enum PhotoCategory {
 	Uncategorized(0),
 	Abstract(10),
 	Animals(11),
-	BlackAndWhite(5),
+	BlackAndWhite(5, "Black and White"),
 	Celebrities(1),
-	CityAndArchitecture(9),
+	CityAndArchitecture(9, "City and Architecture"),
 	Commercial(15),
 	Concert(16),
 	Family(20),
@@ -28,20 +28,27 @@ public enum PhotoCategory {
 	Nature(18),
 	Nude(4),
 	People(7),
-	PerformingArts(19),
+	PerformingArts(19, "Performing Arts"),
 	Sport(17),
-	StillLife(6),
+	StillLife(6, "Still Life"),
 	Street(21),
 	Transporation(26),
 	Travel(13),
 	Underwater(22),
-	UrbanExploration(27),
+	UrbanExploration(27, "Urban Exploration"),
 	Wedding(25);
 	
 	private int categoryId;
+	private String categoryName;
 	
 	private PhotoCategory(int categoryId) {
 		this.categoryId = categoryId;
+		this.categoryName = getClass().getSimpleName();
+	}
+	
+	private PhotoCategory(int categoryId, String categoryName) {
+		this.categoryId = categoryId;
+		this.categoryName = categoryName;
 	}
 	
 	/**
@@ -49,6 +56,13 @@ public enum PhotoCategory {
 	 */
 	public int getCategoryId() {
 		return categoryId;
+	}
+	
+	/**
+	 * @return the categoryName
+	 */
+	public String getCategoryName() {
+		return categoryName;
 	}
 
 	public static PhotoCategory valueOf(int value) {
