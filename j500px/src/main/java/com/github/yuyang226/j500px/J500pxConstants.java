@@ -1,5 +1,11 @@
 package com.github.yuyang226.j500px;
 
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 /**
  * @author yayu
  *
@@ -7,7 +13,7 @@ package com.github.yuyang226.j500px;
 public final class J500pxConstants {
 
 	//url parts
-	static final String PHOTOS_URL_PART = "photos";
+	
 	static final String PHOTO_COMMENT_PART = "%s/photos/%s/comments";
 	static final String PHOTO_DETAIL_PART = "%s/photos/%s";
 	
@@ -26,33 +32,37 @@ public final class J500pxConstants {
 	static final String COMMENTS = "comments";
 	static final String PHOTO_TAG = "photo";
 	
-	public static final String PATH_REST = ""; //FIXME
 	public static final String DEFAULT_HOST = "api.500px.com";
 	public static final String DEFAULT_HOST_FULL = "https://" + DEFAULT_HOST;
+	public static final String PATH_REST = "/v1";
 	public static final String URL_REST = DEFAULT_HOST_FULL + PATH_REST;
 	
-	
-	public static final String PATH_OAUTH_REQUEST_TOKEN = "/v1/oauth/request_token";
-    public static final String PATH_OAUTH_ACCESS_TOKEN = "/v1/oauth/access_token";
-    public static final String PATH_OAUTH_AUTHORIZE = "/v1/oauth/authorize";
+	/*OAuth*/
+	public static final String PARAM_OAUTH_CONSUMER_KEY = "oauth_consumer_key";
+	public static final String PATH_OAUTH_REQUEST_TOKEN = PATH_REST + "/oauth/request_token";
+    public static final String PATH_OAUTH_ACCESS_TOKEN = PATH_REST + "/oauth/access_token";
+    public static final String PATH_OAUTH_AUTHORIZE = PATH_REST + "/oauth/authorize";
 	public static final String OAUTH_URL_ACCESS_TOKEN = DEFAULT_HOST_FULL + PATH_OAUTH_ACCESS_TOKEN;
 	public static final String OAUTH_URL_AUTHORIZE = DEFAULT_HOST_FULL + PATH_OAUTH_AUTHORIZE;
 	public static final String OAUTH_URL_REQUEST_TOKEN = DEFAULT_HOST_FULL + PATH_OAUTH_REQUEST_TOKEN;
 
 	public static final String UTF8 = "UTF-8";
 	
-	/*Photos Constants*/
-	public static final String ID = "id";
-	public static final String NAME = "name";
-	public static final String IMG_URL = "image_url";
-	public static final String IMAGEs = "images";
-	public static final String URL = "url";
-	public static final String USER = "user";
-	public static final String COMMENTS_COUNT = "comments_count";
-	public static final String FAV_COUNT = "favorites_count";
-	public static final String TIMES_VIEWED = "times_viewed";
-	public static final String LAT = "latitude";
-	public static final String LNG = "longitude";
+	public static final String PATH_PHOTOS = PATH_REST + "/photos";
+	
+	/*Users Constants*/
+	public static final String PATH_USERS = PATH_REST + "/users";
+	public static final ThreadLocal<DateFormat> W3C_DATE_FORMATS = new ThreadLocal<DateFormat>() {
+	    protected synchronized DateFormat initialValue() {
+	    	return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"){ 
+	    		private static final long serialVersionUID = 1L;
+	
+	    		public Date parse(String source,ParsePosition pos) {    
+	    	        return super.parse(source.replaceFirst(":(?=[0-9]{2}$)",""),pos);
+	    	    }
+	    	};
+	    }
+	};
 	
 	private J500pxConstants() {
 		super();

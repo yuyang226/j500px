@@ -5,6 +5,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import com.github.yuyang226.j500px.http.REST;
 import com.github.yuyang226.j500px.http.Transport;
 import com.github.yuyang226.j500px.oauth.OAuthInterface;
+import com.github.yuyang226.j500px.photos.PhotosInterface;
+import com.github.yuyang226.j500px.users.UsersInterface;
 
 public class J500px {
 
@@ -14,6 +16,8 @@ public class J500px {
     private Transport transport;
 
     private OAuthInterface oAuthInterface;
+    private UsersInterface usersInterface;
+    private PhotosInterface photosInterface;
     
 	/**
 	 * @param consumerKey
@@ -45,6 +49,28 @@ public class J500px {
 					transport);
 		}
 		return oAuthInterface;
+	}
+
+	/**
+	 * @return the usersInterface
+	 */
+	public UsersInterface getUsersInterface() {
+		if (usersInterface == null) {
+			usersInterface = new UsersInterface(consumerKey, consumerSecret, 
+					transport);
+		}
+		return usersInterface;
+	}
+	
+	/**
+	 * @return the photosInterface
+	 */
+	public PhotosInterface getPhotosInterface() {
+		if (photosInterface == null) {
+			photosInterface = new PhotosInterface(consumerKey, consumerSecret, 
+					transport);
+		}
+		return photosInterface;
 	}
 
 	/**

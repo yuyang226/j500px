@@ -114,8 +114,6 @@ public class REST extends Transport {
      * @throws JSONException
      */
     public Response get(String path, List<Parameter> parameters) throws IOException, JSONException {
-        parameters.add(new Parameter("nojsoncallback", "1"));
-        parameters.add(new Parameter("format", "json"));
         String data = getLine(path, parameters);
         return new RESTResponse(data);
     }

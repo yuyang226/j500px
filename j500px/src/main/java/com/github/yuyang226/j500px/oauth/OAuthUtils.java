@@ -42,6 +42,12 @@ public class OAuthUtils {
     public static final String REQUEST_METHOD_POST = "POST";
     
     private static final Logger logger = LoggerFactory.getLogger(OAuthUtils.class);
+
+    public static void addOAuthParamsGet(String apiSharedSecret, String url, List<Parameter> parameters) 
+    		throws J500pxException {
+    	addBasicOAuthParams(parameters);
+    	signGet(apiSharedSecret, url, parameters);
+    }
     
     public static void addOAuthParams(String apiSharedSecret, String url, List<Parameter> parameters) 
     throws J500pxException {
@@ -195,7 +201,7 @@ public class OAuthUtils {
         parameters.add(new Parameter("oauth_nonce", Long.toString(System.nanoTime())));
     }
     
-    private static void addOAuthSignatureMethod(final List<Parameter> parameters) {
+    static void addOAuthSignatureMethod(final List<Parameter> parameters) {
         parameters.add(new Parameter("oauth_signature_method", "HMAC-SHA1"));
     }
     
@@ -203,7 +209,7 @@ public class OAuthUtils {
         parameters.add(new Parameter("oauth_timestamp", String.valueOf((System.currentTimeMillis() / 1000))));
     }
     
-    private static void addOAuthVersion(final List<Parameter> parameters) {
+    static void addOAuthVersion(final List<Parameter> parameters) {
         parameters.add(new Parameter("oauth_version", "1.0"));
     }
 

@@ -14,7 +14,6 @@ public class RESTResponse implements Response {
     
     private JSONObject jsonObj;
     private String rawResponse;
-    private String errorCode;
     private String errorMessage;
     
     /**
@@ -34,12 +33,11 @@ public class RESTResponse implements Response {
     public void parse(String rawMessage) throws JSONException {
         this.rawResponse = rawMessage;
         this.jsonObj = new JSONObject(rawMessage);
-        stat = this.jsonObj.getString("stat");
+        stat = this.jsonObj.optString("status");
         if ("ok".equals(stat)) {
             
         } else if ("fail".equals(stat)) {
-            this.errorCode = this.jsonObj.getString("code");
-            this.errorMessage = this.jsonObj.getString("message");
+            this.errorMessage = this.jsonObj.getString("error");
         }
     }
 
@@ -53,11 +51,7 @@ public class RESTResponse implements Response {
     }
 
     public boolean isError() {
-        return errorCode != null;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
+        return errorMessage != null;
     }
 
     public String getErrorMessage() {

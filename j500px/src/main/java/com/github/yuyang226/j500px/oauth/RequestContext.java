@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2005 Aetrion LLC.
- */
-
 package com.github.yuyang226.j500px.oauth;
 
 import java.util.ArrayList;
@@ -15,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * RequestContext.getRequestContext().  The method will return a RequestContext object which is only usable within the
  * current thread.
  *
- * @author Anthony Eden
+ * @author yayu
  */
 public class RequestContext {
     private static final Logger logger = LoggerFactory.getLogger(RequestContext.class);

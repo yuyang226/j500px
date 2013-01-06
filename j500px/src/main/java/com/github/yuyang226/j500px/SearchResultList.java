@@ -1,50 +1,46 @@
-/*
- * Copyright (c) 2005 Aetrion LLC.
- */
 
-package com.github.yuyang226.j500px.http;
+package com.github.yuyang226.j500px;
 
 import java.util.ArrayList;
 
 /**
  * Search result list with additional meta data.
  *
- * @author Anthony Eden
- * @version $Id: SearchResultList.java,v 1.3 2007/07/20 19:06:27 x-mago Exp $
+ * @author yayu
  */
 public class SearchResultList<E> extends ArrayList<E>{
 
     private static final long serialVersionUID = -7962319033867024935L;
-    private int page;
-    private int pages;
+    private int currentPage;
+    private int totalPages;
     private int perPage;
-    private int total;
+    private int totalItems;
 
-    public int getPage() {
-        return page;
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public void setPage(int page) {
-        this.page = page;
+    public void setCurrentPage(int page) {
+        this.currentPage = page;
     }
 
     public void setPage(String page) {
         if (page != null && page.length() != 0) {
-            setPage(Integer.parseInt(page));
+            setCurrentPage(Integer.parseInt(page));
         }
     }
 
-    public int getPages() {
-        return pages;
+    public int getTotalPages() {
+        return totalPages;
     }
 
-    public void setPages(int pages) {
-        this.pages = pages;
+    public void setTotalPages(int pages) {
+        this.totalPages = pages;
     }
 
-    public void setPages(String pages) {
+    public void setTotalPages(String pages) {
         if (pages != null && pages.length() != 0) {
-            setPages(Integer.parseInt(pages));
+            setTotalPages(Integer.parseInt(pages));
         }
     }
 
@@ -62,17 +58,17 @@ public class SearchResultList<E> extends ArrayList<E>{
         }
     }
 
-    public int getTotal() {
-        return total;
+    public int getTotalItems() {
+        return totalItems;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public void setTotalItems(int total) {
+        this.totalItems = total;
     }
 
-    public void setTotal(String total) {
+    public void setTotalItems(String total) {
         if (total != null && total.length() != 0) {
-            setTotal(Integer.parseInt(total));
+            setTotalItems(Integer.parseInt(total));
         }
     }
 

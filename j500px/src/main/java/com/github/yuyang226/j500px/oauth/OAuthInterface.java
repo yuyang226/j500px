@@ -31,6 +31,7 @@ public class OAuthInterface {
     public static final String KEY_OAUTH_VERIFIER = "oauth_verifier";
 
     public static final String PARAM_OAUTH_CONSUMER_KEY = "oauth_consumer_key";
+    public static final String PARAM_CONSUMER_KEY = "consumer_key";
     public static final String PARAM_OAUTH_TOKEN = "oauth_token";
 
     private String consumerKey;

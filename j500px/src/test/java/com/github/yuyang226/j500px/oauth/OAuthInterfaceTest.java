@@ -15,15 +15,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.yuyang226.j500px.J500pxException;
-import com.github.yuyang226.j500px.J500px;
 
 /**
  * @author yayu
  *
  */
-public class OAuthInterfaceTest {
-	public static final String CONSUMER_KEY = "xtO5q8ryOefZs8GaRiOKf1a3dWvBXlGHG19B5Euc";
-	public static final String CONSUMER_SECRET = "WxzjJgOdu1jm2yLbHPhmplwsh7iYYUbEO2y2rHPc";
+public class OAuthInterfaceTest extends AbstractJ500pxTest{
 	
 	/**
 	 * Test method for {@link com.github.yuyang226.j500px.oauth.OAuthInterface#getRequestToken(java.lang.String)}.
@@ -33,7 +30,6 @@ public class OAuthInterfaceTest {
 	 */
 	@Test
 	public void testGetRequestToken() throws IOException, J500pxException, ParserConfigurationException {
-		J500px p = new J500px(CONSUMER_KEY, CONSUMER_SECRET);
 		OAuthToken token = p.getOAuthInterface().getRequestToken("http://localhost/hello");
 		assertNotNull(token);
 	}
@@ -47,7 +43,6 @@ public class OAuthInterfaceTest {
 	@Test
 	@Ignore
 	public void testGetAccessToken() throws ParserConfigurationException, IOException, J500pxException {
-		J500px p = new J500px(CONSUMER_KEY, CONSUMER_SECRET);
 		OAuth token = p.getOAuthInterface().getAccessToken("ZPEJg3mBGI0VnTvit7zpjFVYg6hioff0mGGGrim1", 
 				"ZDZUzBf2DvMkQB3Jkq0fsXD9CBsEotGqwAbCkEkn", "LeVPOuJcP5NjIwGEOgWW");
 		assertNotNull(token);
@@ -60,7 +55,6 @@ public class OAuthInterfaceTest {
 	 */
 	@Test
 	public void testBuildAuthenticationUrl() throws ParserConfigurationException, MalformedURLException {
-		J500px p = new J500px(CONSUMER_KEY, CONSUMER_SECRET);
 		OAuthToken oauthToken = new OAuthToken("ZPEJg3mBGI0VnTvit7zpjFVYg6hioff0mGGGrim1", 
 				"ZDZUzBf2DvMkQB3Jkq0fsXD9CBsEotGqwAbCkEkn");
 		URL url = p.getOAuthInterface().buildAuthenticationUrl(oauthToken);

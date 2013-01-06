@@ -3,6 +3,8 @@
  */
 package com.github.yuyang226.j500px.model;
 
+import com.github.yuyang226.j500px.users.User;
+
 /**
  * 
  * @author Charles (charleszq@gmail.com)

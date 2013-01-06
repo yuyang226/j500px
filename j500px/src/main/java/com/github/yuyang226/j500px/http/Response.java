@@ -12,8 +12,6 @@ public interface Response {
 
     boolean isError();
 
-    String getErrorCode();
-
     String getErrorMessage();
     
     JSONObject getData();
