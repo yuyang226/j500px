@@ -21,10 +21,12 @@ public class J500px {
     
 	/**
 	 * @param consumerKey
+	 * @throws ParserConfigurationException 
 	 */
-	public J500px(String consumerKey) {
+	public J500px(String consumerKey) throws ParserConfigurationException {
 		super();
 		this.consumerKey = consumerKey;
+		this.transport = new REST(J500pxConstants.DEFAULT_HOST);
 	}
 	
 	/**

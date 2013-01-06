@@ -25,8 +25,8 @@ public class Photo implements Serializable {
 	private User author;
 	private PhotoExif exif;
 	private String location;
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 	
 	private int votesCount;
 	private int favouritesCount;
@@ -202,28 +202,28 @@ public class Photo implements Serializable {
 	/**
 	 * @return the latitude
 	 */
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
 	/**
 	 * @param latitude the latitude to set
 	 */
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
 	/**
 	 * @return the longitude
 	 */
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
 	/**
 	 * @param longitude the longitude to set
 	 */
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 

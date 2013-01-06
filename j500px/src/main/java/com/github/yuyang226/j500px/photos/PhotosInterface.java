@@ -48,14 +48,14 @@ public class PhotosInterface {
 	/**
 	 * @param photoId
 	 * @param imageSize
-	 * @param comments Return comments to the photo in the response. Comments are returned in order of creation, 20 entries per page.
+	 * @param showComments Return comments to the photo in the response. Comments are returned in order of creation, 20 entries per page.
 	 * @param commentsPage Return the specified page from the comments listing. Page numbers are 1-based.
 	 * @return
 	 * @throws J500pxException 
 	 * @throws JSONException 
 	 * @throws IOException 
 	 */
-	public Photo getPhotoDetail(String photoId, ImageSize imageSize, int comments, int commentsPage) 
+	public Photo getPhotoDetail(String photoId, ImageSize imageSize, boolean showComments, int commentsPage) 
 			throws J500pxException, IOException, JSONException {
 		if (photoId == null) {
 			throw new IllegalArgumentException("photo id must not be null");
@@ -74,8 +74,8 @@ public class PhotosInterface {
 			parameters.add(new Parameter("image_size", imageSize.getSize()));
 		}
 		
-		if (comments > 0) {
-			parameters.add(new Parameter("comments", comments));
+		if (showComments) {
+			parameters.add(new Parameter("comments", 1));
 		}
 		
 		if (commentsPage > 0) {
@@ -125,7 +125,7 @@ public class PhotosInterface {
 		if (userId == null && userName == null) {
 			throw new IllegalArgumentException("Either userId or userName must be set");
 		}
-		if (userFeature != GlobalFeatures.USER && userFeature != GlobalFeatures.USER_FRIENDS
+		if (userFeature != null && userFeature != GlobalFeatures.USER && userFeature != GlobalFeatures.USER_FRIENDS
 				&& userFeature != GlobalFeatures.USER_FAVORITES) {
 			throw new IllegalArgumentException("Must be one of the user features");
 		}

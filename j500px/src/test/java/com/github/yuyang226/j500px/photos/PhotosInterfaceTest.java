@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -38,7 +39,8 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	@Test
 	public void testGetPhotosNoAuth() throws J500pxException, IOException, JSONException {
 		RequestContext.getRequestContext().setOAuth(null);
-		PhotoList photoList = p.getPhotosInterface().getPhotos(GlobalFeatures.EDITORS, null, null, null, null, null, -1, -1);
+		List<Photo> photoList = p.getPhotosInterface().getPhotos(GlobalFeatures.POPULAR, 
+				null, null, null, ImageSize.LARGEST, null, 1, 20);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
 	}
@@ -67,7 +69,7 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	
 	@Test
 	public void testGetPhotoDetail() throws J500pxException, IOException, JSONException {
-		Photo photo = p.getPhotosInterface().getPhotoDetail("22161277", null, 5, -1);
+		Photo photo = p.getPhotosInterface().getPhotoDetail("22161277", null, true, -1);
 		assertNotNull(photo);
 	}
 
