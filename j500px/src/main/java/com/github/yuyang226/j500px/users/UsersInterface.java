@@ -154,7 +154,9 @@ public class UsersInterface {
 		
 		if (userElement.has("contacts")) {
 			JSONObject contactsObj = userElement.getJSONObject("contacts");
-			for (String name : JSONObject.getNames(contactsObj)) {
+			JSONArray contactsArray = contactsObj.names();
+			for (int i = 0; i < contactsArray.length(); i++) {
+				String name = contactsArray.getString(i);
 				user.getContacts().add(new UserContact(name, contactsObj.getString(name)));
 			}
 		}
