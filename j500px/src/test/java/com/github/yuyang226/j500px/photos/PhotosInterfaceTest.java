@@ -5,6 +5,7 @@ package com.github.yuyang226.j500px.photos;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.List;
@@ -85,6 +86,16 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 		PhotoList photoList = p.getPhotosInterface().searchPhotos(null, "nikon", -1, -1);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
+	}
+	
+	@Test
+	public void testCreateNewPhoto() throws J500pxException, IOException, JSONException {
+		final String name = "test";
+		PhotoUpload photoUpload = p.getPhotosInterface()
+				.createNewPhoto(name, null, PhotoCategory.Uncategorized, null, null, null, null);
+		assertNotNull(photoUpload);
+		assertNotNull(photoUpload.getUploadKey());
+		assertEquals(name, photoUpload.getPhoto().getName());
 	}
 
 }

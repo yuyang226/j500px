@@ -74,12 +74,12 @@ public abstract class Transport {
     
     public Response getJSON(String apiSharedSecret, String path,
             List<Parameter> parameters) throws IOException, JSONException, J500pxException {
-        signIfOAuth(apiSharedSecret, path, parameters);
+        signIfOAuth(apiSharedSecret, path, parameters, false);
         return get(path, parameters);
     }
     
     private void signIfOAuth(String apiSharedSecret, String path,
-            List<Parameter> parameters) throws J500pxException {
+            List<Parameter> parameters, boolean isPost) throws J500pxException {
     	boolean isOAuth = false;
         for (int i = parameters.size() - 1; i >= 0; i--) {
             if (parameters.get(i) instanceof OAuthTokenParameter) {
@@ -87,16 +87,18 @@ public abstract class Transport {
                 break;
             }
         }
-       /* parameters.add(new Parameter("nojsoncallback", "1"));
-        parameters.add(new Parameter("format", "json"));*/
         if (isOAuth) {
-            OAuthUtils.addOAuthParamsGet(apiSharedSecret, J500pxConstants.DEFAULT_HOST_FULL + path, parameters);
+        	if (isPost) {
+        		OAuthUtils.addOAuthParams(apiSharedSecret, J500pxConstants.DEFAULT_HOST_FULL + path, parameters);
+        	} else {
+        		OAuthUtils.addOAuthParamsGet(apiSharedSecret, J500pxConstants.DEFAULT_HOST_FULL + path, parameters);
+        	}
         }
     }
     
     public Response postJSON(String apiSharedSecret, String path,
             List<Parameter> parameters) throws IOException, JSONException, J500pxException {
-    	signIfOAuth(apiSharedSecret, path, parameters);
+    	signIfOAuth(apiSharedSecret, path, parameters, true);
         return post(path, parameters);
     }
 

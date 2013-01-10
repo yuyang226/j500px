@@ -245,9 +245,9 @@ public class PhotosInterface {
 		boolean signed = OAuthUtils.hasSigned();
 
 		if (signed) {
-			OAuthUtils.addOAuthToken(parameters);
 			parameters.add(new Parameter(
 					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+			OAuthUtils.addOAuthToken(parameters);
 		} else {
 			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
 					apiKey));
@@ -277,6 +277,83 @@ public class PhotosInterface {
 			throw new J500pxException(response.getErrorMessage());
 		}
 		return parsePhotoList(response.getData());
+	}
+	
+	/**
+	 * Create a new photo on behalf of the user, and receive an upload token in exchange.
+	 * 
+	 * OAuth required.
+	 * 
+	 * @param name — Title of the photo
+	 * @param description — Description for the photo
+	 * @param category — The category of the photo
+	 * @param exif - Technical details of the photo
+	 * @param latitude — Latitude, in decimal format
+	 * @param longitude — Longitude, in decimal format
+	 * @param privacy  — Whether to hide the photo from the user profile on the website. Otherwise, the photo is only available for use in Collections/Portfolio.
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public PhotoUpload createNewPhoto(String name, String description, PhotoCategory category, PhotoExif exif, 
+			Double latitude, Double longitude, Boolean privacy) 
+			throws J500pxException, IOException, JSONException{
+		if (name == null) {
+			throw new IllegalArgumentException("Name must not be null");
+		}
+		boolean signed = OAuthUtils.hasSigned();
+		if (!signed) {
+			throw new J500pxException("must sign in first.");
+		}
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add(new Parameter("name", name));
+		if (description != null) {
+			parameters.add(new Parameter("description", description));
+		}
+		parameters.add(new Parameter("category", 
+				category != null ? category.getCategoryId() : PhotoCategory.Uncategorized));
+		if (exif != null) {
+			if (exif.getShutterSpeed() != null) {
+				parameters.add(new Parameter("shutter_speed", exif.getShutterSpeed()));
+			}
+			if (exif.getFocalLength() != null) {
+				parameters.add(new Parameter("focal_length", exif.getFocalLength()));
+			}
+			if (exif.getAperture() != null) {
+				parameters.add(new Parameter("aperture", exif.getAperture()));
+			}
+			if (exif.getIso() != null) {
+				parameters.add(new Parameter("iso", exif.getIso()));
+			}
+			if (exif.getCamera() != null) {
+				parameters.add(new Parameter("camera", exif.getCamera()));
+			}
+			if (exif.getLens() != null) {
+				parameters.add(new Parameter("lens", exif.getLens()));
+			}
+		}
+		
+		if (latitude != null) {
+			parameters.add(new Parameter("latitude", latitude));
+		}
+		
+		if (longitude != null) {
+			parameters.add(new Parameter("longitude", longitude));
+		}
+		
+		Response response = transportAPI.postJSON(sharedSecret,
+				J500pxConstants.PATH_PHOTOS, parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
+		
+		PhotoUpload upload = new PhotoUpload();
+		upload.setUploadKey(response.getData().getString("upload_key"));
+		upload.setPhoto(parsePhoto(response.getData().getJSONObject("photo")));
+		return upload;
 	}
 	
 	public void likePhoto(String photoId, boolean fav) throws J500pxException {
