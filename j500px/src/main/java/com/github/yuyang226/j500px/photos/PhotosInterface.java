@@ -427,30 +427,28 @@ public class PhotosInterface {
 	 * @param photoId
 	 * @param comment
 	 * @throws J500pxException
+	 * @throws JSONException 
+	 * @throws IOException 
 	 */
-	public void commentPhoto(String photoId, String comment)
-			throws J500pxException {
+	public void commentPhoto(int photoId, String comment)
+			throws J500pxException, IOException, JSONException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
 			throw new J500pxException("must sign in first.");
 		}
 
 		String path = String
-				.format(J500pxConstants.PATH_PHOTO_COMMENT, photoId);
-		List<Parameter> params = new ArrayList<Parameter>();
-		params.add( new Parameter("id", photoId));
-		params.add(new Parameter("body", comment));
-		OAuthUtils.addOAuthToken(params);
-		try {
-			Response response = transportAPI.postJSON(sharedSecret, path,
-					params);
-			if (response.isError()) {
-				System.err.println(response.getErrorMessage());
-				throw new J500pxException(response.getErrorMessage());
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			throw new J500pxException(e);
+				.format(Locale.US, J500pxConstants.PATH_PHOTO_COMMENT, photoId);
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add( new Parameter("id", photoId));
+		parameters.add(new Parameter("body", comment));
+		Response response = transportAPI.postJSON(sharedSecret, path,
+				parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
 		}
 
 	}
