@@ -72,5 +72,19 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 		Photo photo = p.getPhotosInterface().getPhotoDetail("22161277", null, true, -1);
 		assertNotNull(photo);
 	}
+	
+	@Test
+	public void testSearchPhotos() throws J500pxException, IOException, JSONException {
+		PhotoList photoList = p.getPhotosInterface().searchPhotos("Nikon", "Nikon", -1, -1);
+		assertNotNull(photoList);
+		assertFalse(photoList.isEmpty());
+	}
+	
+	@Test
+	public void testSearchPhotosOneArgs() throws J500pxException, IOException, JSONException {
+		PhotoList photoList = p.getPhotosInterface().searchPhotos(null, "nikon", -1, -1);
+		assertNotNull(photoList);
+		assertFalse(photoList.isEmpty());
+	}
 
 }

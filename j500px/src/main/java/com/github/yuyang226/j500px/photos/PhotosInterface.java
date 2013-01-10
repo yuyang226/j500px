@@ -225,6 +225,60 @@ public class PhotosInterface {
 		return parsePhotoList(response.getData());
 	}
 	
+	/**
+	 * @param term  A keyword to search for
+	 * @param tag A complete tag string to search for
+	 * @param pageNum Return a specific page. Page numbering is 1-based.
+	 * @param pageSize The number of results to return. Can not be over 100, default 20.
+	 * @return
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 * @see http://developer.500px.com/docs/photos-search
+	 */
+	public PhotoList searchPhotos(String term, String tag,
+			int pageNum, int pageSize) throws J500pxException, IOException, JSONException {
+		if (term == null && tag == null) {
+			throw new IllegalArgumentException("Both term and tag are null");
+		}
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		boolean signed = OAuthUtils.hasSigned();
+
+		if (signed) {
+			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter(
+					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		} else {
+			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
+					apiKey));
+		}
+
+		if (term != null) {
+			parameters
+					.add(new Parameter("term", term));
+		}
+
+		if (tag != null) {
+			parameters.add(new Parameter("tag", tag));
+		}
+
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
+		}
+
+		if (pageSize > 0) {
+			parameters.add(new Parameter("rpp", pageSize));
+		}
+
+		Response response = signed ? transportAPI.getJSON(sharedSecret,
+				J500pxConstants.PATH_PHOTOS_SEARCH, parameters) : transportAPI.get(
+				J500pxConstants.PATH_PHOTOS_SEARCH, parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
+		return parsePhotoList(response.getData());
+	}
+	
 	public void likePhoto(String photoId, boolean fav) throws J500pxException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
@@ -295,9 +349,11 @@ public class PhotosInterface {
 	public static PhotoList parsePhotoList(JSONObject photoListObj)
 			throws JSONException {
 		PhotoList photoList = new PhotoList();
-		String feature = photoListObj.getString("feature");
-		photoList.setFeature(GlobalFeatures.valueOf(feature
-				.toUpperCase(Locale.US)));
+		String feature = photoListObj.optString("feature", null);
+		if (feature != null) {
+			photoList.setFeature(GlobalFeatures.valueOf(feature
+					.toUpperCase(Locale.US)));
+		}
 		photoList.setTotalItems(photoListObj.getInt("total_items"));
 		photoList.setTotalPages(photoListObj.getInt("total_pages"));
 		photoList.setCurrentPage(photoListObj.getInt("current_page"));
