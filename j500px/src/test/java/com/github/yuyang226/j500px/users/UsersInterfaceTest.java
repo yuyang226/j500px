@@ -6,11 +6,6 @@ package com.github.yuyang226.j500px.users;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -33,6 +28,30 @@ public class UsersInterfaceTest extends AbstractJ500pxTest{
 	@Test
 	public void testGetUserProfile() throws J500pxException, IOException, JSONException {
 		User user = p.getUsersInterface().getUserProfile();
+		assertNotNull(user);
+	}
+	
+	@Test(expected=IOException.class)
+	public void testGetUserProfileStringNotFound() throws J500pxException, IOException, JSONException {
+		User user = p.getUsersInterface().getUserProfile("abc", "yuyang226@gmail.com");
+		assertNotNull(user);
+	}
+	
+	@Test
+	public void testGetUserProfileString() throws J500pxException, IOException, JSONException {
+		User user = p.getUsersInterface().getUserProfile("yuyang226", null);
+		assertNotNull(user);
+	}
+	
+	@Test
+	public void testGetUserProfileStringEmail() throws J500pxException, IOException, JSONException {
+		User user = p.getUsersInterface().getUserProfile(null, "yuyang226@gmail.com");
+		assertNotNull(user);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testGetUserProfileStringIllegal() throws J500pxException, IOException, JSONException {
+		User user = p.getUsersInterface().getUserProfile(null, null);
 		assertNotNull(user);
 	}
 	

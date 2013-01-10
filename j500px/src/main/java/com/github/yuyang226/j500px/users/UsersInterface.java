@@ -20,6 +20,7 @@ import com.github.yuyang226.j500px.J500pxException;
 import com.github.yuyang226.j500px.http.Parameter;
 import com.github.yuyang226.j500px.http.Response;
 import com.github.yuyang226.j500px.http.Transport;
+import com.github.yuyang226.j500px.oauth.OAuthInterface;
 import com.github.yuyang226.j500px.oauth.OAuthUtils;
 
 /**
@@ -49,8 +50,8 @@ public class UsersInterface {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * OAuth required
+	 * @return the profile information for the current user.
 	 * @throws J500pxException
 	 * @throws IOException
 	 * @throws JSONException
@@ -61,6 +62,48 @@ public class UsersInterface {
                 apiKey));
         OAuthUtils.addOAuthToken(parameters);
         Response response = transportAPI.getJSON(sharedSecret, J500pxConstants.PATH_USERS, parameters);
+        if (response.isError()) {
+            throw new J500pxException(response.getErrorMessage());
+        }
+
+        JSONObject userElement = response.getData().getJSONObject("user");
+		return parseUserObject(userElement);
+	}
+	
+	/**
+	 * @param userName
+	 * @param email the eMail address of the user to search for
+	 * @return the profile information for a specific user.
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public User getUserProfile(String userName, String email) throws J500pxException, IOException, JSONException {
+		if (userName == null && email == null) {
+			throw new IllegalArgumentException("Both userName and email are null");
+		}
+        List<Parameter> parameters = new ArrayList<Parameter>();
+        if (userName != null) {
+        	parameters.add(new Parameter("username", userName));
+        }
+        if (email != null) {
+        	parameters.add(new Parameter("email", email));
+        }
+        
+        boolean signed = OAuthUtils.hasSigned();
+
+		if (signed) {
+			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter(
+					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		} else {
+			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
+					apiKey));
+		}
+		
+		Response response = signed ? transportAPI.getJSON(sharedSecret,
+				J500pxConstants.PATH_USERS_SHOW, parameters) : transportAPI.get(
+				J500pxConstants.PATH_USERS_SHOW, parameters);
         if (response.isError()) {
             throw new J500pxException(response.getErrorMessage());
         }
