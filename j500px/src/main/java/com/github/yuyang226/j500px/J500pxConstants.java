@@ -49,6 +49,7 @@ public final class J500pxConstants {
 	public static final String UTF8 = "UTF-8";
 	
 	public static final String PATH_PHOTOS = PATH_REST + "/photos";
+	public static final String PATH_PHOTO_COMMENT = PATH_PHOTOS + "/%s/comments";
 	
 	/*Users Constants*/
 	public static final String PATH_USERS = PATH_REST + "/users";
