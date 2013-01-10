@@ -4,6 +4,7 @@
 package com.github.yuyang226.j500px.users;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
@@ -53,6 +54,13 @@ public class UsersInterfaceTest extends AbstractJ500pxTest{
 	public void testGetUserProfileStringIllegal() throws J500pxException, IOException, JSONException {
 		User user = p.getUsersInterface().getUserProfile(null, null);
 		assertNotNull(user);
+	}
+	
+	@Test
+	public void testGetUserFriends() throws J500pxException, IOException, JSONException {
+		UserList userList = p.getUsersInterface().getUserFriends(1726909, -1);
+		assertNotNull(userList);
+		assertFalse(userList.isEmpty());
 	}
 	
 }

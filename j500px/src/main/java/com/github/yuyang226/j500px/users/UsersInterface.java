@@ -113,6 +113,50 @@ public class UsersInterface {
 	}
 	
 	/**
+	 * @param userId Required user ID
+	 * @param pageNum the specified page of the resource. Page numbering is 1-based.
+	 * @return
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public UserList getUserFriends(int userId, int pageNum) throws J500pxException, IOException, JSONException {
+        List<Parameter> parameters = new ArrayList<Parameter>();
+        boolean signed = OAuthUtils.hasSigned();
+
+		if (signed) {
+			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter(
+					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		} else {
+			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
+					apiKey));
+		}
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
+		}
+		
+		final String path = String.format(Locale.US, J500pxConstants.PATH_USERS_FRIENDS, userId);
+		
+		Response response = signed ? transportAPI.getJSON(sharedSecret,
+				path, parameters) : transportAPI.get(path, parameters);
+        if (response.isError()) {
+            throw new J500pxException(response.getErrorMessage());
+        }
+        
+        UserList userList = new UserList();
+        userList.setTotalPages(response.getData().getInt("friends_pages"));
+        userList.setCurrentPage(response.getData().getInt("page"));
+        userList.setTotalItems(response.getData().getInt("friends_count"));
+        JSONArray friendsObj = response.getData().optJSONArray("friends");
+        for (int i = 0; friendsObj != null && i < friendsObj.length(); i++) {
+        	userList.add(parseUserObject(friendsObj.getJSONObject(i)));
+        }
+        userList.setPerPage(userList.size());
+        return userList;
+	}
+	
+	/**
 	 * 
 	 * @param userElement
 	 * @return

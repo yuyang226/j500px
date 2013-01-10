@@ -24,7 +24,7 @@ public class SearchResultList<E> extends ArrayList<E>{
         this.currentPage = page;
     }
 
-    public void setPage(String page) {
+    public void setCurrentPage(String page) {
         if (page != null && page.length() != 0) {
             setCurrentPage(Integer.parseInt(page));
         }
