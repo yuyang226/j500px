@@ -107,5 +107,12 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 		assertNotNull(photoVoted);
 		assertEquals(photoVoted.getId(), photoId);
 	}
+	
+	@Test
+	public void testLikePhoto() throws J500pxException, IOException, JSONException {
+		int photoId = 22151841;
+		p.getPhotosInterface().likePhoto(photoId, true);
+		p.getPhotosInterface().likePhoto(photoId, false);
+	}
 
 }

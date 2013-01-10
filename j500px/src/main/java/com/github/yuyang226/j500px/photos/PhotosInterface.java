@@ -385,35 +385,38 @@ public class PhotosInterface {
 		return parsePhoto(response.getData().getJSONObject("photo"));
 	}
 	
-	public void likePhoto(String photoId, boolean fav) throws J500pxException {
+	/**
+	 * @param photoId
+	 * @param fav
+	 * @return
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public void likePhoto(int photoId, boolean fav) throws J500pxException, IOException, JSONException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
 			throw new J500pxException("must sign in first.");
 		}
 
-		String path = String
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		OAuthUtils.addOAuthToken(parameters);
+		
+		final String path = String
 				.format(Locale.US, J500pxConstants.PATH_PHOTO_FAV, photoId);
-		List<Parameter> params = new ArrayList<Parameter>();
-		params.add(new Parameter("id", photoId));
-		OAuthUtils.addOAuthToken(params);
-		try {
-			Response response = null;
-			if( fav ) {
-				transportAPI.postJSON(sharedSecret, path,
-					params);
-			} else {
-				//TODO delete not ready yet.
-			}
-			if( response == null ) {
-				throw new J500pxException("no response"); //should  not happen.
-			}
-			if ( response.isError()) {
-				System.err.println(response.getErrorMessage());
-				throw new J500pxException(response.getErrorMessage());
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			throw new J500pxException(e);
+		Response response = null;
+		if (fav) {
+			response = transportAPI.postJSON(sharedSecret, path,
+				parameters);
+		} else {
+			//delete
+			response = transportAPI.deleteJSON(sharedSecret, path,
+					parameters);
+		}
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
 		}
 	}
 

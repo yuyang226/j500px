@@ -72,6 +72,17 @@ public abstract class Transport {
      */
     protected abstract Response post(String path, List<Parameter> parameters) throws IOException, JSONException;
     
+    /**
+     * Invoke an HTTP DELETE request on a remote host.
+     *
+     * @param path The request path
+     * @param parameters The parameters (collection of Parameter objects)
+     * @return The Response object
+     * @throws IOException
+     * @throws JSONException
+     */
+    protected abstract Response delete(String path, List<Parameter> parameters) throws IOException, JSONException;
+    
     public Response getJSON(String apiSharedSecret, String path,
             List<Parameter> parameters) throws IOException, JSONException, J500pxException {
         signIfOAuth(apiSharedSecret, path, parameters, false);
@@ -96,10 +107,21 @@ public abstract class Transport {
         }
     }
     
+    private void signIfOAuthDelete(String apiSharedSecret, String path,
+    		List<Parameter> parameters) throws J500pxException {
+    	OAuthUtils.addOAuthParamsDelete(apiSharedSecret, J500pxConstants.DEFAULT_HOST_FULL + path, parameters);
+    }
+    
     public Response postJSON(String apiSharedSecret, String path,
             List<Parameter> parameters) throws IOException, JSONException, J500pxException {
     	signIfOAuth(apiSharedSecret, path, parameters, true);
         return post(path, parameters);
+    }
+    
+    public Response deleteJSON(String apiSharedSecret, String path,
+            List<Parameter> parameters) throws IOException, JSONException, J500pxException {
+    	signIfOAuthDelete(apiSharedSecret, path, parameters);
+        return delete(path, parameters);
     }
 
     /**

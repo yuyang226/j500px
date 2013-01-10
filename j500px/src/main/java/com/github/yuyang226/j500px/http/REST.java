@@ -192,9 +192,13 @@ public class REST extends Transport {
         return result;
     }
     
-    public String sendPost(String path, List<Parameter> parameters) throws IOException{
+    public String sendPost(String path, List<Parameter> parameters) throws IOException {
+    	return sendData(OAuthUtils.REQUEST_METHOD_POST, path, parameters);
+    }
+    
+    public String sendData(String method, String path, List<Parameter> parameters) throws IOException{
         if (logger.isDebugEnabled()) {
-            logger.debug("Send Post Input Params: path '{}'; parameters {}", path, parameters);
+            logger.debug("Send {} Input Params: path '{}'; parameters {}", new String[]{method, path, parameters.toString()});
         }
         HttpURLConnection conn = null;
         DataOutputStream out = null;
@@ -202,10 +206,10 @@ public class REST extends Transport {
         try {
             URL url = UrlUtilities.buildPostUrl(getHost(), getPort(), path);
             if (logger.isDebugEnabled()) {
-                logger.debug("Post URL: {}", url.toString());
+                logger.debug("{} URL: {}", method, url.toString());
             }
             conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod(method);
             String postParam = encodeParameters(parameters);
             byte[] bytes = postParam.getBytes(J500pxConstants.UTF8);
             conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));
@@ -225,7 +229,7 @@ public class REST extends Transport {
             try {
                 responseCode = conn.getResponseCode();
             } catch (IOException e) {
-                logger.error("Failed to get the POST response code", e);
+                logger.error("Failed to get the " + method + " response code", e);
                 if (conn.getErrorStream() != null) {
                     responseCode = conn.getResponseCode();
                 }
@@ -245,11 +249,11 @@ public class REST extends Transport {
             if (conn != null)
                 conn.disconnect() ;
             if (logger.isDebugEnabled()) {
-                logger.debug("Send Post Result: {}", data);
+                logger.debug("Send {} Result: {}", method, data);
             }
         }
     }
-
+    
     private String readFromStream(InputStream input) throws IOException {
         BufferedReader reader = null;
         try {
@@ -274,8 +278,18 @@ public class REST extends Transport {
         String data = sendPost(path, parameters);
         return new RESTResponse(data);
     }
+    
+    /* (non-Javadoc)
+	 * @see com.github.yuyang226.j500px.http.Transport#delete(java.lang.String, java.util.List)
+	 */
+	@Override
+	protected Response delete(String path, List<Parameter> parameters)
+			throws IOException, JSONException {
+		String data =  sendData(OAuthUtils.REQUEST_METHOD_DELETE, path, parameters);
+        return new RESTResponse(data);
+	}
 
-    public boolean isProxyAuth() {
+	public boolean isProxyAuth() {
         return proxyAuth;
     }
 

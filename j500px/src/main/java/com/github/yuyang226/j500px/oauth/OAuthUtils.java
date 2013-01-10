@@ -40,6 +40,7 @@ public class OAuthUtils {
     
     public static final String REQUEST_METHOD_GET = "GET";
     public static final String REQUEST_METHOD_POST = "POST";
+    public static final String REQUEST_METHOD_DELETE = "DELETE";
     
     private static final Logger logger = LoggerFactory.getLogger(OAuthUtils.class);
 
@@ -53,6 +54,12 @@ public class OAuthUtils {
     throws J500pxException {
         addBasicOAuthParams(parameters);
         signPost(apiSharedSecret, url, parameters);
+    }
+
+    public static void addOAuthParamsDelete(String apiSharedSecret, String url, List<Parameter> parameters) 
+    		throws J500pxException {
+    	addBasicOAuthParams(parameters);
+    	signDelete(apiSharedSecret, url, parameters);
     }
     
     public static void addOAuthToken(List<Parameter> parameters) throws J500pxException {
@@ -68,6 +75,10 @@ public class OAuthUtils {
     
     public static void signPost(String apiSharedSecret, String url, List<Parameter>  parameters) throws J500pxException {
         sign(OAuthUtils.REQUEST_METHOD_POST, url, apiSharedSecret, parameters);
+    }
+    
+    public static void signDelete(String apiSharedSecret, String url, List<Parameter>  parameters) throws J500pxException {
+        sign(OAuthUtils.REQUEST_METHOD_DELETE, url, apiSharedSecret, parameters);
     }
     
     public static void sign(String requestMethod, String url, String apiSharedSecret, List<Parameter>  parameters) throws J500pxException {
