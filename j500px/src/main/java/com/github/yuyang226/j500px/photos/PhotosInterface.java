@@ -356,6 +356,35 @@ public class PhotosInterface {
 		return upload;
 	}
 	
+	/**
+	 * @param photoId
+	 * @param vote false for 'dislike' or true for 'like'.
+	 * @throws J500pxException
+	 * @throws JSONException 
+	 * @throws IOException 
+	 */
+	public Photo votePhoto(int photoId, boolean vote) throws J500pxException, IOException, JSONException {
+		boolean signed = OAuthUtils.hasSigned();
+		if (!signed) {
+			throw new J500pxException("must sign in first.");
+		}
+
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add(new Parameter("vote", vote ? "1" : "0"));
+		
+		final String path = String
+				.format(Locale.US, J500pxConstants.PATH_PHOTO_VOTE, photoId);
+		Response response = transportAPI.postJSON(sharedSecret, path,
+				parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
+		return parsePhoto(response.getData().getJSONObject("photo"));
+	}
+	
 	public void likePhoto(String photoId, boolean fav) throws J500pxException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
@@ -363,7 +392,7 @@ public class PhotosInterface {
 		}
 
 		String path = String
-				.format(J500pxConstants.PATH_PHOTO_FAV, photoId);
+				.format(Locale.US, J500pxConstants.PATH_PHOTO_FAV, photoId);
 		List<Parameter> params = new ArrayList<Parameter>();
 		params.add(new Parameter("id", photoId));
 		OAuthUtils.addOAuthToken(params);

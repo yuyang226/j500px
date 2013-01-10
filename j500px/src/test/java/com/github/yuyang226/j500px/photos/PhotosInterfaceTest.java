@@ -3,14 +3,15 @@
  */
 package com.github.yuyang226.j500px.photos;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.yuyang226.j500px.J500pxException;
@@ -96,6 +97,15 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 		assertNotNull(photoUpload);
 		assertNotNull(photoUpload.getUploadKey());
 		assertEquals(name, photoUpload.getPhoto().getName());
+	}
+	
+	@Test
+	@Ignore("one image can only be voted once and once only!")
+	public void testVotePhoto() throws J500pxException, IOException, JSONException {
+		int photoId = 22768699;
+		Photo photoVoted = p.getPhotosInterface().votePhoto(photoId, true);
+		assertNotNull(photoVoted);
+		assertEquals(photoVoted.getId(), photoId);
 	}
 
 }
