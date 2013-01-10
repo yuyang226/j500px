@@ -224,6 +224,38 @@ public class PhotosInterface {
 		}
 		return parsePhotoList(response.getData());
 	}
+	
+	public void likePhoto(String photoId, boolean fav) throws J500pxException {
+		boolean signed = OAuthUtils.hasSigned();
+		if (!signed) {
+			throw new J500pxException("must sign in first.");
+		}
+
+		String path = String
+				.format(J500pxConstants.PATH_PHOTO_FAV, photoId);
+		List<Parameter> params = new ArrayList<Parameter>();
+		params.add(new Parameter("id", photoId));
+		OAuthUtils.addOAuthToken(params);
+		try {
+			Response response = null;
+			if( fav ) {
+				transportAPI.postJSON(sharedSecret, path,
+					params);
+			} else {
+				//TODO delete not ready yet.
+			}
+			if( response == null ) {
+				throw new J500pxException("no response"); //should  not happen.
+			}
+			if ( response.isError()) {
+				System.err.println(response.getErrorMessage());
+				throw new J500pxException(response.getErrorMessage());
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			throw new J500pxException(e);
+		}
+	}
 
 	/**
 	 * Comments a given photo identified by <code>photoId</code>. This needs
@@ -243,6 +275,7 @@ public class PhotosInterface {
 		String path = String
 				.format(J500pxConstants.PATH_PHOTO_COMMENT, photoId);
 		List<Parameter> params = new ArrayList<Parameter>();
+		params.add( new Parameter("id", photoId));
 		params.add(new Parameter("body", comment));
 		OAuthUtils.addOAuthToken(params);
 		try {
