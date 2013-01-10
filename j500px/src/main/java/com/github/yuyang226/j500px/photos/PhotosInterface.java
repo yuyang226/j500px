@@ -107,6 +107,35 @@ public class PhotosInterface {
 		return photo;
 	}
 
+	/**
+	 * 
+	 * @param photoId
+	 *            the photo id
+	 * @param pageNo
+	 *            a specific page in the comment listing. Page numbering is
+	 *            1-based.
+	 * @throws IOException
+	 * @throws JSONException
+	 * @throws J500pxException
+	 */
+	public List<Comment> getPhotoComments(int photoId, int pageNo) throws IOException,
+			JSONException, J500pxException {
+		String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_COMMENT, photoId);
+		List<Parameter> params = new ArrayList<Parameter>();
+		params.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY, apiKey));
+		if (pageNo > 0) {
+			params.add(new Parameter("page", pageNo));
+		}
+		Response response = transportAPI.getJSON(sharedSecret, path, params);
+		JSONArray commentsObj = response.getData().optJSONArray("comments");
+		List<Comment> comments = new ArrayList<Comment>();
+		for (int i = 0; commentsObj != null && i < commentsObj.length(); i++) {
+			comments.add(parseComment(commentsObj.getJSONObject(i)));
+		}
+		return comments;
+	}
+
 	public Comment parseComment(JSONObject commentObj) throws JSONException {
 		Comment comment = new Comment();
 		comment.setId(commentObj.getInt("id"));
@@ -147,7 +176,7 @@ public class PhotosInterface {
 		if (userId != null) {
 			extraParams.add(new Parameter("user_id", userId));
 		} else {
-			extraParams.add(new Parameter("username", userId));
+			extraParams.add(new Parameter("username", userName));
 		}
 
 		return getPhotos(userFeature != null ? userFeature
@@ -179,6 +208,7 @@ public class PhotosInterface {
 
 		if (signed) {
 			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter("include_states","favorited"));
 			parameters.add(new Parameter(
 					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
 		} else {
@@ -224,20 +254,25 @@ public class PhotosInterface {
 		}
 		return parsePhotoList(response.getData());
 	}
-	
+
 	/**
-	 * @param term  A keyword to search for
-	 * @param tag A complete tag string to search for
-	 * @param pageNum Return a specific page. Page numbering is 1-based.
-	 * @param pageSize The number of results to return. Can not be over 100, default 20.
+	 * @param term
+	 *            A keyword to search for
+	 * @param tag
+	 *            A complete tag string to search for
+	 * @param pageNum
+	 *            Return a specific page. Page numbering is 1-based.
+	 * @param pageSize
+	 *            The number of results to return. Can not be over 100, default
+	 *            20.
 	 * @return
 	 * @throws J500pxException
 	 * @throws IOException
 	 * @throws JSONException
 	 * @see http://developer.500px.com/docs/photos-search
 	 */
-	public PhotoList searchPhotos(String term, String tag,
-			int pageNum, int pageSize) throws J500pxException, IOException, JSONException {
+	public PhotoList searchPhotos(String term, String tag, int pageNum,
+			int pageSize) throws J500pxException, IOException, JSONException {
 		if (term == null && tag == null) {
 			throw new IllegalArgumentException("Both term and tag are null");
 		}
@@ -254,8 +289,7 @@ public class PhotosInterface {
 		}
 
 		if (term != null) {
-			parameters
-					.add(new Parameter("term", term));
+			parameters.add(new Parameter("term", term));
 		}
 
 		if (tag != null) {
@@ -271,33 +305,44 @@ public class PhotosInterface {
 		}
 
 		Response response = signed ? transportAPI.getJSON(sharedSecret,
-				J500pxConstants.PATH_PHOTOS_SEARCH, parameters) : transportAPI.get(
-				J500pxConstants.PATH_PHOTOS_SEARCH, parameters);
+				J500pxConstants.PATH_PHOTOS_SEARCH, parameters) : transportAPI
+				.get(J500pxConstants.PATH_PHOTOS_SEARCH, parameters);
 		if (response.isError()) {
 			throw new J500pxException(response.getErrorMessage());
 		}
 		return parsePhotoList(response.getData());
 	}
-	
+
 	/**
-	 * Create a new photo on behalf of the user, and receive an upload token in exchange.
+	 * Create a new photo on behalf of the user, and receive an upload token in
+	 * exchange.
 	 * 
 	 * OAuth required.
 	 * 
-	 * @param name — Title of the photo
-	 * @param description — Description for the photo
-	 * @param category — The category of the photo
-	 * @param exif - Technical details of the photo
-	 * @param latitude — Latitude, in decimal format
-	 * @param longitude — Longitude, in decimal format
-	 * @param privacy  — Whether to hide the photo from the user profile on the website. Otherwise, the photo is only available for use in Collections/Portfolio.
+	 * @param name
+	 *            — Title of the photo
+	 * @param description
+	 *            — Description for the photo
+	 * @param category
+	 *            — The category of the photo
+	 * @param exif
+	 *            - Technical details of the photo
+	 * @param latitude
+	 *            — Latitude, in decimal format
+	 * @param longitude
+	 *            — Longitude, in decimal format
+	 * @param privacy
+	 *            — Whether to hide the photo from the user profile on the
+	 *            website. Otherwise, the photo is only available for use in
+	 *            Collections/Portfolio.
 	 * @throws J500pxException
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public PhotoUpload createNewPhoto(String name, String description, PhotoCategory category, PhotoExif exif, 
-			Double latitude, Double longitude, Boolean privacy) 
-			throws J500pxException, IOException, JSONException{
+	public PhotoUpload createNewPhoto(String name, String description,
+			PhotoCategory category, PhotoExif exif, Double latitude,
+			Double longitude, Boolean privacy) throws J500pxException,
+			IOException, JSONException {
 		if (name == null) {
 			throw new IllegalArgumentException("Name must not be null");
 		}
@@ -306,21 +351,23 @@ public class PhotosInterface {
 			throw new J500pxException("must sign in first.");
 		}
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(
-				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		parameters.add(new Parameter(OAuthInterface.PARAM_OAUTH_CONSUMER_KEY,
+				apiKey));
 		OAuthUtils.addOAuthToken(parameters);
 		parameters.add(new Parameter("name", name));
 		if (description != null) {
 			parameters.add(new Parameter("description", description));
 		}
-		parameters.add(new Parameter("category", 
-				category != null ? category.getCategoryId() : PhotoCategory.Uncategorized));
+		parameters.add(new Parameter("category", category != null ? category
+				.getCategoryId() : PhotoCategory.Uncategorized));
 		if (exif != null) {
 			if (exif.getShutterSpeed() != null) {
-				parameters.add(new Parameter("shutter_speed", exif.getShutterSpeed()));
+				parameters.add(new Parameter("shutter_speed", exif
+						.getShutterSpeed()));
 			}
 			if (exif.getFocalLength() != null) {
-				parameters.add(new Parameter("focal_length", exif.getFocalLength()));
+				parameters.add(new Parameter("focal_length", exif
+						.getFocalLength()));
 			}
 			if (exif.getAperture() != null) {
 				parameters.add(new Parameter("aperture", exif.getAperture()));
@@ -335,48 +382,50 @@ public class PhotosInterface {
 				parameters.add(new Parameter("lens", exif.getLens()));
 			}
 		}
-		
+
 		if (latitude != null) {
 			parameters.add(new Parameter("latitude", latitude));
 		}
-		
+
 		if (longitude != null) {
 			parameters.add(new Parameter("longitude", longitude));
 		}
-		
+
 		Response response = transportAPI.postJSON(sharedSecret,
 				J500pxConstants.PATH_PHOTOS, parameters);
 		if (response.isError()) {
 			throw new J500pxException(response.getErrorMessage());
 		}
-		
+
 		PhotoUpload upload = new PhotoUpload();
 		upload.setUploadKey(response.getData().getString("upload_key"));
 		upload.setPhoto(parsePhoto(response.getData().getJSONObject("photo")));
 		return upload;
 	}
-	
+
 	/**
 	 * @param photoId
-	 * @param vote false for 'dislike' or true for 'like'.
+	 * @param vote
+	 *            false for 'dislike' or true for 'like'.
 	 * @throws J500pxException
-	 * @throws JSONException 
-	 * @throws IOException 
+	 * @throws JSONException
+	 * @throws IOException
 	 */
-	public Photo votePhoto(int photoId, boolean vote) throws J500pxException, IOException, JSONException {
+	public Photo votePhoto(int photoId, boolean vote) throws J500pxException,
+			IOException, JSONException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
 			throw new J500pxException("must sign in first.");
 		}
 
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(
-				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		parameters.add(new Parameter(OAuthInterface.PARAM_OAUTH_CONSUMER_KEY,
+				apiKey));
 		OAuthUtils.addOAuthToken(parameters);
 		parameters.add(new Parameter("vote", vote ? "1" : "0"));
-		
-		final String path = String
-				.format(Locale.US, J500pxConstants.PATH_PHOTO_VOTE, photoId);
+
+		final String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_VOTE, photoId);
 		Response response = transportAPI.postJSON(sharedSecret, path,
 				parameters);
 		if (response.isError()) {
@@ -384,7 +433,7 @@ public class PhotosInterface {
 		}
 		return parsePhoto(response.getData().getJSONObject("photo"));
 	}
-	
+
 	/**
 	 * @param photoId
 	 * @param fav
@@ -393,27 +442,26 @@ public class PhotosInterface {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public void likePhoto(int photoId, boolean fav) throws J500pxException, IOException, JSONException {
+	public void likePhoto(int photoId, boolean fav) throws J500pxException,
+			IOException, JSONException {
 		boolean signed = OAuthUtils.hasSigned();
 		if (!signed) {
 			throw new J500pxException("must sign in first.");
 		}
 
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(
-				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		parameters.add(new Parameter(OAuthInterface.PARAM_OAUTH_CONSUMER_KEY,
+				apiKey));
 		OAuthUtils.addOAuthToken(parameters);
-		
-		final String path = String
-				.format(Locale.US, J500pxConstants.PATH_PHOTO_FAV, photoId);
+
+		final String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_FAV, photoId);
 		Response response = null;
 		if (fav) {
-			response = transportAPI.postJSON(sharedSecret, path,
-				parameters);
+			response = transportAPI.postJSON(sharedSecret, path, parameters);
 		} else {
-			//delete
-			response = transportAPI.deleteJSON(sharedSecret, path,
-					parameters);
+			// delete
+			response = transportAPI.deleteJSON(sharedSecret, path, parameters);
 		}
 		if (response.isError()) {
 			throw new J500pxException(response.getErrorMessage());
@@ -427,8 +475,8 @@ public class PhotosInterface {
 	 * @param photoId
 	 * @param comment
 	 * @throws J500pxException
-	 * @throws JSONException 
-	 * @throws IOException 
+	 * @throws JSONException
+	 * @throws IOException
 	 */
 	public void commentPhoto(int photoId, String comment)
 			throws J500pxException, IOException, JSONException {
@@ -437,13 +485,12 @@ public class PhotosInterface {
 			throw new J500pxException("must sign in first.");
 		}
 
-		String path = String
-				.format(Locale.US, J500pxConstants.PATH_PHOTO_COMMENT, photoId);
+		String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_COMMENT, photoId);
 		List<Parameter> parameters = new ArrayList<Parameter>();
-		parameters.add(new Parameter(
-				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		parameters.add(new Parameter(OAuthInterface.PARAM_OAUTH_CONSUMER_KEY,
+				apiKey));
 		OAuthUtils.addOAuthToken(parameters);
-		parameters.add( new Parameter("id", photoId));
 		parameters.add(new Parameter("body", comment));
 		Response response = transportAPI.postJSON(sharedSecret, path,
 				parameters);

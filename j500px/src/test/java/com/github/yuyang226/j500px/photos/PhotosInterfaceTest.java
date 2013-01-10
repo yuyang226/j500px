@@ -76,6 +76,12 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	}
 	
 	@Test
+	public void testGetPhotoComments() throws IOException, JSONException, J500pxException {
+		List<Comment> comments = p.getPhotosInterface().getPhotoComments(22151841, -1);
+		assertFalse(comments.isEmpty());
+	}
+	
+	@Test
 	public void testSearchPhotos() throws J500pxException, IOException, JSONException {
 		PhotoList photoList = p.getPhotosInterface().searchPhotos("Nikon", "Nikon", -1, -1);
 		assertNotNull(photoList);
