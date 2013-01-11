@@ -214,9 +214,6 @@ public class REST extends Transport {
             boolean isDelete = OAuthUtils.REQUEST_METHOD_DELETE.equals(method);
             String postParam = encodeParameters(parameters);
             byte[] bytes = postParam.getBytes(J500pxConstants.UTF8);
-            conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));
-            conn.addRequestProperty("Cache-Control", "no-cache,max-age=0"); 
-            conn.addRequestProperty("Pragma", "no-cache");
             if (isDelete) {
             	//Android does not support DELETE to write to a OUTPUT stream
             	StringBuffer buf = new StringBuffer();
@@ -229,10 +226,14 @@ public class REST extends Transport {
                             .append("=\"").append(UrlUtilities.encode(String.valueOf(param.getValue()))).append("\"");
                 }
             	conn.setRequestProperty("Authorization", "OAuth " + buf.toString());
+            } else {
+            	conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));
+                conn.addRequestProperty("Cache-Control", "no-cache,max-age=0"); 
+                conn.addRequestProperty("Pragma", "no-cache");
             }
             
             conn.setUseCaches(false);
-            conn.setDoOutput(true);
+            conn.setDoOutput(!isDelete);
             conn.setDoInput(true);
             conn.connect();
             if (!isDelete) {
