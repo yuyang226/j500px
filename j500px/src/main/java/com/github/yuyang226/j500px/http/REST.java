@@ -210,21 +210,38 @@ public class REST extends Transport {
             }
             conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod(method);
+            conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            boolean isDelete = OAuthUtils.REQUEST_METHOD_DELETE.equals(method);
             String postParam = encodeParameters(parameters);
             byte[] bytes = postParam.getBytes(J500pxConstants.UTF8);
             conn.setRequestProperty("Content-Length", Integer.toString(bytes.length));
-            conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.addRequestProperty("Cache-Control", "no-cache,max-age=0"); 
             conn.addRequestProperty("Pragma", "no-cache");
+            if (isDelete) {
+            	//Android does not support DELETE to write to a OUTPUT stream
+            	StringBuffer buf = new StringBuffer();
+                for (int i = 0; i < parameters.size(); i++) {
+                    if (i != 0) {
+                        buf.append(",");
+                    }
+                    Parameter param = parameters.get(i);
+                    buf.append(UrlUtilities.encode(param.getName()))
+                            .append("=\"").append(UrlUtilities.encode(String.valueOf(param.getValue()))).append("\"");
+                }
+            	conn.setRequestProperty("Authorization", "OAuth " + buf.toString());
+            }
+            
             conn.setUseCaches(false);
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.connect();
-            out = new DataOutputStream(conn.getOutputStream());
-            out.write(bytes);
-            out.flush();
-            out.close();
-
+            if (!isDelete) {
+            	out = new DataOutputStream(conn.getOutputStream());
+            	out.write(bytes);
+            	out.flush();
+            	out.close();
+            }
+            
             int responseCode = HttpURLConnection.HTTP_OK;
             try {
                 responseCode = conn.getResponseCode();
