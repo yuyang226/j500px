@@ -47,6 +47,7 @@ public final class UserUtils {
 		user.setDomain(userElement.optString("domain", null));
 		user.setLocale(userElement.optString("locale", "en"));
 		user.setShowNude(userElement.optBoolean("show_nude", Boolean.FALSE));
+		user.setFollowing(userElement.optBoolean("following", Boolean.FALSE));
 		user.setFullName(userElement.optString("fullname", null));
 		user.setUserPicUrl(userElement.optString("userpic_url", null));
 		user.setEmail(userElement.optString("email", null));

@@ -58,6 +58,8 @@ public class User implements Serializable {
 	private List<UserContact> contacts = new ArrayList<UserContact>();
 	private List<Equipment> equipments = new ArrayList<Equipment>();
 	
+	private boolean following;
+	
 	/**
 	 * 
 	 */
@@ -487,6 +489,20 @@ public class User implements Serializable {
 	 */
 	public void setEquipments(List<Equipment> equipments) {
 		this.equipments = equipments;
+	}
+	
+	/**
+	 * @return the following
+	 */
+	public boolean isFollowing() {
+		return following;
+	}
+
+	/**
+	 * @param following the following to set
+	 */
+	public void setFollowing(boolean following) {
+		this.following = following;
 	}
 
 	/* (non-Javadoc)

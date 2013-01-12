@@ -256,5 +256,31 @@ public class UsersInterface {
         userList.setPerPage(userList.size());
         return userList;
 	}
+	
+	/**
+	 * Add the user to the list of followers.
+	 * @param userId
+	 * @param follow True for follow, False for removal
+	 * @throws J500pxException 
+	 * @throws JSONException 
+	 * @throws IOException 
+	 */
+	public User followUser(int userId, boolean follow) throws J500pxException, IOException, JSONException {
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		
+		final String path = String.format(Locale.US, J500pxConstants.PATH_USERS_FRIENDS, userId);
+		Response response = follow ? transportAPI.postJSON(sharedSecret, path, parameters) :
+			transportAPI.deleteJSON(sharedSecret, path, parameters);
+		
+        if (response.isError()) {
+            throw new J500pxException(response.getErrorMessage());
+        }
+
+        JSONObject userElement = response.getData().getJSONObject("user");
+		return UserUtils.parseUserObject(userElement);
+	}
 
 }

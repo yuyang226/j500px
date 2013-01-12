@@ -3,8 +3,9 @@
  */
 package com.github.yuyang226.j500px.users;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -65,6 +66,7 @@ public class UsersInterfaceTest extends AbstractJ500pxTest{
 	@Test
 	public void testGetUserFriends() throws J500pxException, IOException, JSONException {
 		UserList userList = p.getUsersInterface().getUserFriends(1726909, -1, -1);
+		System.out.println(userList);
 		assertNotNull(userList);
 		assertFalse(userList.isEmpty());
 	}
@@ -81,6 +83,21 @@ public class UsersInterfaceTest extends AbstractJ500pxTest{
 		UserList userList = p.getUsersInterface().searchUsers("Shanghai");
 		assertNotNull(userList);
 		assertFalse(userList.isEmpty());
+	}
+	
+	@Test
+	public void testFollowUser() throws J500pxException, IOException, JSONException {
+		int userId = 754488; //charleszq
+		User user = p.getUsersInterface().getUserProfile(userId, null, null);
+		assertNotNull(user);
+		boolean currentStatus = user.isFollowing();
+		user = p.getUsersInterface().followUser(userId, !currentStatus);
+		assertNotNull(user);
+		assertEquals(userId, user.getId());
+		
+		user = p.getUsersInterface().followUser(userId, currentStatus);
+		assertNotNull(user);
+		assertEquals(userId, user.getId());
 	}
 	
 }
