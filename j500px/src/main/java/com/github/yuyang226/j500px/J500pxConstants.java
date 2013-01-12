@@ -59,6 +59,7 @@ public final class J500pxConstants {
 	/*Users Constants*/
 	public static final String PATH_USERS = PATH_REST + "/users";
 	public static final String PATH_USERS_SHOW = PATH_USERS + "/show";
+	public static final String PATH_USERS_SEARCH = PATH_USERS + "/search";
 	public static final String PATH_USERS_FRIENDS = PATH_USERS + "/%d/friends";
 	public static final String PATH_USERS_FOLLOWERS = PATH_USERS + "/%d/followers";
 	

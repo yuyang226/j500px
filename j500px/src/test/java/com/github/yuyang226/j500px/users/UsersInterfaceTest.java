@@ -76,4 +76,11 @@ public class UsersInterfaceTest extends AbstractJ500pxTest{
 		assertFalse(userList.isEmpty());
 	}
 	
+	@Test
+	public void testSearchUsers() throws J500pxException, IOException, JSONException {
+		UserList userList = p.getUsersInterface().searchUsers("Shanghai");
+		assertNotNull(userList);
+		assertFalse(userList.isEmpty());
+	}
+	
 }

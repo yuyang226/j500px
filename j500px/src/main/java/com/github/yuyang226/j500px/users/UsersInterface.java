@@ -214,6 +214,51 @@ public class UsersInterface {
 	}
 	
 	/**
+	 * Return listing of ten (up to one hundred) users from search results for a specified search term.
+	 * 
+	 * @param term
+	 * @return
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public UserList searchUsers(String term) throws J500pxException, IOException, JSONException {
+		if (term == null) {
+			throw new IllegalArgumentException("term is required");
+		}
+        List<Parameter> parameters = new ArrayList<Parameter>();
+        boolean signed = OAuthUtils.hasSigned();
+
+		if (signed) {
+			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter(
+					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		} else {
+			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
+					apiKey));
+		}
+		parameters.add(new Parameter("term", term));
+		
+		Response response = signed ? transportAPI.getJSON(sharedSecret,
+				J500pxConstants.PATH_USERS_SEARCH, parameters) : 
+					transportAPI.get(J500pxConstants.PATH_USERS_SEARCH, parameters);
+        if (response.isError()) {
+            throw new J500pxException(response.getErrorMessage());
+        }
+        
+        UserList userList = new UserList();
+        userList.setTotalPages(response.getData().getInt("total_pages"));
+        userList.setCurrentPage(response.getData().getInt("current_page"));
+        userList.setTotalItems(response.getData().getInt("total_items"));
+        JSONArray friendsObj = response.getData().optJSONArray("users");
+        for (int i = 0; friendsObj != null && i < friendsObj.length(); i++) {
+        	userList.add(parseUserObject(friendsObj.getJSONObject(i)));
+        }
+        userList.setPerPage(userList.size());
+        return userList;
+	}
+	
+	/**
 	 * 
 	 * @param userElement
 	 * @return
@@ -299,7 +344,7 @@ public class UsersInterface {
 		if (userElement.has("contacts")) {
 			JSONObject contactsObj = userElement.getJSONObject("contacts");
 			JSONArray contactsArray = contactsObj.names();
-			for (int i = 0; i < contactsArray.length(); i++) {
+			for (int i = 0; contactsArray != null && i < contactsArray.length(); i++) {
 				String name = contactsArray.getString(i);
 				user.getContacts().add(new UserContact(name, contactsObj.getString(name)));
 			}
