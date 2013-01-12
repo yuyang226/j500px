@@ -33,8 +33,9 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	 */
 	@Test
 	public void testGetPhotos() throws J500pxException, IOException, JSONException {
-		PhotoList photoList = p.getPhotosInterface().getPhotos(GlobalFeatures.EDITORS, null, PhotoCategory.BlackAndWhite, null, ImageSize.THUMNAIL,
-				null, -1, -1);
+		PhotoList photoList = p.getPhotosInterface().getPhotos(GlobalFeatures.EDITORS, null, PhotoCategory.BlackAndWhite, 
+				null, new ImageSize[]{ImageSize.THUMNAIL}, 
+				null, false, false, false, -1, -1);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
 	}
@@ -43,7 +44,8 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	public void testGetPhotosNoAuth() throws J500pxException, IOException, JSONException {
 		RequestContext.getRequestContext().setOAuth(null);
 		List<Photo> photoList = p.getPhotosInterface().getPhotos(GlobalFeatures.POPULAR, 
-				null, null, null, ImageSize.LARGEST, null, 1, 20);
+				null, null, null, new ImageSize[]{ImageSize.THUMNAIL, ImageSize.LARGEST}, null, 
+				true, true, true, 1, 20);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
 	}
@@ -96,14 +98,14 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	
 	@Test
 	public void testSearchPhotos() throws J500pxException, IOException, JSONException {
-		PhotoList photoList = p.getPhotosInterface().searchPhotos("Nikon", "Nikon", -1, -1);
+		PhotoList photoList = p.getPhotosInterface().searchPhotos("Nikon", "Nikon", true, null, -1, -1);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
 	}
 	
 	@Test
 	public void testSearchPhotosOneArgs() throws J500pxException, IOException, JSONException {
-		PhotoList photoList = p.getPhotosInterface().searchPhotos(null, "nikon", -1, -1);
+		PhotoList photoList = p.getPhotosInterface().searchPhotos(null, "nikon", false, null, -1, -1);
 		assertNotNull(photoList);
 		assertFalse(photoList.isEmpty());
 	}

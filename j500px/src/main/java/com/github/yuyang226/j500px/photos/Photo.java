@@ -50,6 +50,17 @@ public class Photo implements Serializable {
 	private int salesCount;
 	private Date forSaleDate;
 	
+	/**
+	 *  if the picture is avaliable for HD Download purchase.
+	 */
+	private boolean storeDownload = false;
+	/**
+	 *  if the picture is avaliable for Canvas print purchase.
+	 */
+	private boolean storePrint = false;
+	
+	private List<String> tags = new ArrayList<String>();
+	
 	
 	/**
 	 * Status of the photo in the system, integer. An active photo always has the status of 1.
@@ -65,6 +76,10 @@ public class Photo implements Serializable {
 	 * Whether the current user currently has this photo in favorites
 	 */
 	private boolean favorited;
+	/**
+	 * Whether the current user has bought this photo
+	 */
+	private boolean purchased;
 	
 	/**
 	 * 
@@ -368,6 +383,20 @@ public class Photo implements Serializable {
 	}
 	
 	/**
+	 * @return the purchased
+	 */
+	public boolean isPurchased() {
+		return purchased;
+	}
+
+	/**
+	 * @param purchased the purchased to set
+	 */
+	public void setPurchased(boolean purchased) {
+		this.purchased = purchased;
+	}
+
+	/**
 	 * @return the createdAt
 	 */
 	public Date getCreatedAt() {
@@ -480,6 +509,34 @@ public class Photo implements Serializable {
 	}
 
 	/**
+	 * @return the storeDownload
+	 */
+	public boolean isStoreDownload() {
+		return storeDownload;
+	}
+
+	/**
+	 * @param storeDownload the storeDownload to set
+	 */
+	public void setStoreDownload(boolean storeDownload) {
+		this.storeDownload = storeDownload;
+	}
+
+	/**
+	 * @return the storePrint
+	 */
+	public boolean isStorePrint() {
+		return storePrint;
+	}
+
+	/**
+	 * @param storePrint the storePrint to set
+	 */
+	public void setStorePrint(boolean storePrint) {
+		this.storePrint = storePrint;
+	}
+
+	/**
 	 * @return the salesCount
 	 */
 	public int getSalesCount() {
@@ -505,6 +562,20 @@ public class Photo implements Serializable {
 	 */
 	public void setForSaleDate(Date forSaleDate) {
 		this.forSaleDate = forSaleDate;
+	}
+
+	/**
+	 * @return the tags
+	 */
+	public List<String> getTags() {
+		return tags;
+	}
+
+	/**
+	 * @param tags the tags to set
+	 */
+	public void setTags(List<String> tags) {
+		this.tags = tags;
 	}
 
 	/* (non-Javadoc)
