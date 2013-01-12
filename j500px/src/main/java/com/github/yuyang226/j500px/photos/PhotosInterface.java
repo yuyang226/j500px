@@ -21,7 +21,7 @@ import com.github.yuyang226.j500px.http.Transport;
 import com.github.yuyang226.j500px.oauth.OAuthInterface;
 import com.github.yuyang226.j500px.oauth.OAuthUtils;
 import com.github.yuyang226.j500px.users.UserList;
-import com.github.yuyang226.j500px.users.UsersInterface;
+import com.github.yuyang226.j500px.users.UserUtils;
 
 /**
  * @author yayu
@@ -178,7 +178,7 @@ public class PhotosInterface {
 		userList.setTotalItems(response.getData().getInt("total_items"));
 		JSONArray usersObj = response.getData().optJSONArray("users");
 		for (int i = 0; usersObj != null && i < usersObj.length(); i++) {
-			userList.add(UsersInterface.parseUserObject(usersObj.getJSONObject(i)));
+			userList.add(UserUtils.parseUserObject(usersObj.getJSONObject(i)));
 		}
 		return userList;
 	}
@@ -224,7 +224,7 @@ public class PhotosInterface {
 		userList.setTotalItems(response.getData().getInt("total_items"));
 		JSONArray usersObj = response.getData().optJSONArray("users");
 		for (int i = 0; usersObj != null && i < usersObj.length(); i++) {
-			userList.add(UsersInterface.parseUserObject(usersObj.getJSONObject(i)));
+			userList.add(UserUtils.parseUserObject(usersObj.getJSONObject(i)));
 		}
 		return userList;
 	}
@@ -236,7 +236,7 @@ public class PhotosInterface {
 		comment.setComment(commentObj.getString("body"));
 		comment.setToWhomUserId(commentObj.optInt("to_whom_user_id", -1));
 		if (commentObj.has("user")) {
-			comment.setAuthor(UsersInterface.parseUserObject(commentObj
+			comment.setAuthor(UserUtils.parseUserObject(commentObj
 					.getJSONObject("user")));
 		}
 		comment.setUserId(commentObj.getInt("user_id"));

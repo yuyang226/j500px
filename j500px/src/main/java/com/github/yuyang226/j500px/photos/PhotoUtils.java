@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import com.github.yuyang226.j500px.J500pxConstants;
 import com.github.yuyang226.j500px.users.Camera;
 import com.github.yuyang226.j500px.users.Lens;
-import com.github.yuyang226.j500px.users.UsersInterface;
+import com.github.yuyang226.j500px.users.UserUtils;
 
 /**
  * @author yayu
@@ -122,7 +122,7 @@ public final class PhotoUtils {
 		}
 	
 		if (photoObj.has("user")) {
-			photo.setAuthor(UsersInterface.parseUserObject(photoObj
+			photo.setAuthor(UserUtils.parseUserObject(photoObj
 					.getJSONObject("user")));
 		}
 		photo.setNsfw(photoObj.optBoolean("nsfw", false));
