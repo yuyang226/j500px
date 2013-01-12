@@ -71,6 +71,12 @@ public class UsersInterface {
 	}
 	
 	/**
+	 * 
+	 * Returns the profile information for a specified user.
+	 * 
+	 * (required) One of the unique user identifiers.
+	 * 
+	 * @param userId
 	 * @param userName
 	 * @param email the eMail address of the user to search for
 	 * @return the profile information for a specific user.
@@ -78,15 +84,16 @@ public class UsersInterface {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public User getUserProfile(String userName, String email) throws J500pxException, IOException, JSONException {
-		if (userName == null && email == null) {
-			throw new IllegalArgumentException("Both userName and email are null");
+	public User getUserProfile(int userId, String userName, String email) throws J500pxException, IOException, JSONException {
+		if (userId < 0 && userName == null && email == null) {
+			throw new IllegalArgumentException("You must provide either userId, userName or email");
 		}
         List<Parameter> parameters = new ArrayList<Parameter>();
-        if (userName != null) {
+        if (userId > 0) {
+        	parameters.add(new Parameter("id", userId));
+        } else if (userName != null) {
         	parameters.add(new Parameter("username", userName));
-        }
-        if (email != null) {
+        } else if (email != null) {
         	parameters.add(new Parameter("email", email));
         }
         
@@ -115,12 +122,13 @@ public class UsersInterface {
 	/**
 	 * @param userId Required user ID
 	 * @param pageNum the specified page of the resource. Page numbering is 1-based.
+	 * @param pageSize Results Per Page, default 20, max 100.
 	 * @return
 	 * @throws J500pxException
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public UserList getUserFriends(int userId, int pageNum) throws J500pxException, IOException, JSONException {
+	public UserList getUserFriends(int userId, int pageNum, int pageSize) throws J500pxException, IOException, JSONException {
         List<Parameter> parameters = new ArrayList<Parameter>();
         boolean signed = OAuthUtils.hasSigned();
 
@@ -134,6 +142,9 @@ public class UsersInterface {
 		}
 		if (pageNum > 0) {
 			parameters.add(new Parameter("page", pageNum));
+		}
+		if (pageSize > 0) {
+			parameters.add(new Parameter("rpp", pageSize));
 		}
 		
 		final String path = String.format(Locale.US, J500pxConstants.PATH_USERS_FRIENDS, userId);
@@ -149,6 +160,52 @@ public class UsersInterface {
         userList.setCurrentPage(response.getData().getInt("page"));
         userList.setTotalItems(response.getData().getInt("friends_count"));
         JSONArray friendsObj = response.getData().optJSONArray("friends");
+        for (int i = 0; friendsObj != null && i < friendsObj.length(); i++) {
+        	userList.add(parseUserObject(friendsObj.getJSONObject(i)));
+        }
+        userList.setPerPage(userList.size());
+        return userList;
+	}
+	
+	/**
+	 * Returns a list of users who follow the specified user.
+	 * 
+	 * @param userId (required) — ID of the user.
+	 * @param pageNum Return the specified page of the resource. Page numbering is 1-based.
+	 * @return
+	 * @throws J500pxException
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public UserList getUserFollowers(int userId, int pageNum) throws J500pxException, IOException, JSONException {
+        List<Parameter> parameters = new ArrayList<Parameter>();
+        boolean signed = OAuthUtils.hasSigned();
+
+		if (signed) {
+			OAuthUtils.addOAuthToken(parameters);
+			parameters.add(new Parameter(
+					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		} else {
+			parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY,
+					apiKey));
+		}
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
+		}
+		
+		final String path = String.format(Locale.US, J500pxConstants.PATH_USERS_FOLLOWERS, userId);
+		
+		Response response = signed ? transportAPI.getJSON(sharedSecret,
+				path, parameters) : transportAPI.get(path, parameters);
+        if (response.isError()) {
+            throw new J500pxException(response.getErrorMessage());
+        }
+        
+        UserList userList = new UserList();
+        userList.setTotalPages(response.getData().getInt("followers_pages"));
+        userList.setCurrentPage(response.getData().getInt("page"));
+        userList.setTotalItems(response.getData().getInt("followers_count"));
+        JSONArray friendsObj = response.getData().optJSONArray("followers");
         for (int i = 0; friendsObj != null && i < friendsObj.length(); i++) {
         	userList.add(parseUserObject(friendsObj.getJSONObject(i)));
         }

@@ -60,6 +60,8 @@ public final class J500pxConstants {
 	public static final String PATH_USERS = PATH_REST + "/users";
 	public static final String PATH_USERS_SHOW = PATH_USERS + "/show";
 	public static final String PATH_USERS_FRIENDS = PATH_USERS + "/%d/friends";
+	public static final String PATH_USERS_FOLLOWERS = PATH_USERS + "/%d/followers";
+	
 	public static final ThreadLocal<DateFormat> W3C_DATE_FORMATS = new ThreadLocal<DateFormat>() {
 	    protected synchronized DateFormat initialValue() {
 	    	return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"){ 
