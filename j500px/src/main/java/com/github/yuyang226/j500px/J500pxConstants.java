@@ -50,9 +50,11 @@ public final class J500pxConstants {
 	
 	public static final String PATH_PHOTOS = PATH_REST + "/photos";
 	public static final String PATH_PHOTOS_SEARCH = PATH_PHOTOS + "/search";
-	public static final String PATH_PHOTO_COMMENT = PATH_PHOTOS + "/%d/comments";
-	public static final String PATH_PHOTO_FAV = PATH_PHOTOS + "/%d/favorite";
+	public static final String PATH_PHOTO_COMMENTS = PATH_PHOTOS + "/%d/comments";
+	public static final String PATH_PHOTO_FAVORITE = PATH_PHOTOS + "/%d/favorite";
+	public static final String PATH_PHOTO_FAVORITES = PATH_PHOTOS + "/%d/favorites";
 	public static final String PATH_PHOTO_VOTE = PATH_PHOTOS + "/%d/vote";
+	public static final String PATH_PHOTO_VOTES = PATH_PHOTOS + "/%d/votes";
 	
 	/*Users Constants*/
 	public static final String PATH_USERS = PATH_REST + "/users";

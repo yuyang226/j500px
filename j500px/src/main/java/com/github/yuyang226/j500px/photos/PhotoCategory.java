@@ -72,7 +72,6 @@ public enum PhotoCategory {
 			}
 		}
 		return Uncategorized;
-				
 	}
 	
 	/*18	Nature,

@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.github.yuyang226.j500px.J500pxException;
 import com.github.yuyang226.j500px.oauth.AbstractJ500pxTest;
 import com.github.yuyang226.j500px.oauth.RequestContext;
+import com.github.yuyang226.j500px.users.UserList;
 
 /**
  * @author yayu
@@ -77,8 +78,20 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	
 	@Test
 	public void testGetPhotoComments() throws IOException, JSONException, J500pxException {
-		List<Comment> comments = p.getPhotosInterface().getPhotoComments(22151841, -1);
+		CommentList comments = p.getPhotosInterface().getPhotoComments(22151841, -1);
 		assertFalse(comments.isEmpty());
+	}
+	
+	@Test
+	public void testGetPhotoVotedUsers() throws IOException, JSONException, J500pxException {
+		UserList userList = p.getPhotosInterface().getPhotoVotedUsers(22151841, -1, -1);
+		assertFalse(userList.isEmpty());
+	}
+	
+	@Test
+	public void testGetPhotoFavedUsers() throws IOException, JSONException, J500pxException {
+		UserList userList = p.getPhotosInterface().getPhotoFavedUsers(22151841, -1, -1);
+		assertFalse(userList.isEmpty());
 	}
 	
 	@Test
@@ -126,5 +139,5 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 		int photoId = 22151841;
 		p.getPhotosInterface().commentPhoto(photoId, "Test");
 	}
-
+	
 }

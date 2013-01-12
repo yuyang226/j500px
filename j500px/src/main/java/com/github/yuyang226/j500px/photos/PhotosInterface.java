@@ -22,6 +22,7 @@ import com.github.yuyang226.j500px.oauth.OAuthInterface;
 import com.github.yuyang226.j500px.oauth.OAuthUtils;
 import com.github.yuyang226.j500px.users.Camera;
 import com.github.yuyang226.j500px.users.Lens;
+import com.github.yuyang226.j500px.users.UserList;
 import com.github.yuyang226.j500px.users.UsersInterface;
 
 /**
@@ -109,35 +110,130 @@ public class PhotosInterface {
 
 	/**
 	 * 
-	 * @param photoId
-	 *            the photo id
-	 * @param pageNo
-	 *            a specific page in the comment listing. Page numbering is
-	 *            1-based.
+	 * @param photoId the photo id
+	 * @param pageNo a specific page in the comment listing. Page numbering is 1-based.
 	 * @throws IOException
 	 * @throws JSONException
 	 * @throws J500pxException
 	 */
-	public List<Comment> getPhotoComments(int photoId, int pageNo) throws IOException,
+	public CommentList getPhotoComments(int photoId, int pageNum) throws IOException,
 			JSONException, J500pxException {
 		String path = String.format(Locale.US,
-				J500pxConstants.PATH_PHOTO_COMMENT, photoId);
-		List<Parameter> params = new ArrayList<Parameter>();
-		params.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY, apiKey));
-		if (pageNo > 0) {
-			params.add(new Parameter("page", pageNo));
+				J500pxConstants.PATH_PHOTO_COMMENTS, photoId);
+		List<Parameter> parameters = new ArrayList<Parameter>();
+		parameters.add(new Parameter(OAuthInterface.PARAM_CONSUMER_KEY, apiKey));
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
 		}
-		Response response = transportAPI.getJSON(sharedSecret, path, params);
+		Response response = transportAPI.getJSON(sharedSecret, path, parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
 		JSONArray commentsObj = response.getData().optJSONArray("comments");
-		List<Comment> comments = new ArrayList<Comment>();
-		for (int i = 0; commentsObj != null && i < commentsObj.length(); i++) {
-			comments.add(parseComment(commentsObj.getJSONObject(i)));
+		CommentList commentList = new CommentList();
+		if (response.getData().has("media_type")) {
+			commentList.setMediaType(MediaType.valueOf(response.getData().getString("media_type").toUpperCase(Locale.US)));
 		}
-		return comments;
+		for (int i = 0; commentsObj != null && i < commentsObj.length(); i++) {
+			commentList.add(parseComment(commentsObj.getJSONObject(i)));
+		}
+		return commentList;
+	}
+	
+	/**
+	 * @param photoId
+	 * @param pageNum Return a specific page in the photo stream. Page numbering is 1-based.
+	 * @param pageSize The number of results to return. Can not be over 100, default 20.
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 * @throws J500pxException
+	 */
+	public UserList getPhotoVotedUsers(int photoId, int pageNum, int pageSize) throws IOException, JSONException, J500pxException {
+		if (!OAuthUtils.hasSigned()) {
+			throw new IllegalArgumentException("must be signed");
+		}
+		String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_VOTES, photoId);
+		List<Parameter> parameters = new ArrayList<Parameter>();
+
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
+		}
+
+		if (pageSize > 0) {
+			parameters.add(new Parameter("rpp", pageSize));
+		}
+		
+		Response response = transportAPI.getJSON(sharedSecret, path, parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
+
+		UserList userList = new UserList();
+		userList.setTotalPages(response.getData().getInt("total_pages"));
+		userList.setCurrentPage(response.getData().getInt("current_page"));
+		userList.setTotalItems(response.getData().getInt("total_items"));
+		JSONArray usersObj = response.getData().optJSONArray("users");
+		for (int i = 0; usersObj != null && i < usersObj.length(); i++) {
+			userList.add(UsersInterface.parseUserObject(usersObj.getJSONObject(i)));
+		}
+		return userList;
+	}
+	
+	/**
+	 * Returns all users that had favorite that photo.
+	 * @param photoId
+	 * @param pageNum
+	 * @param pageSize
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 * @throws J500pxException
+	 */
+	public UserList getPhotoFavedUsers(int photoId, int pageNum, int pageSize) throws IOException, JSONException, J500pxException {
+		if (!OAuthUtils.hasSigned()) {
+			throw new IllegalArgumentException("must be signed");
+		}
+		String path = String.format(Locale.US,
+				J500pxConstants.PATH_PHOTO_FAVORITES, photoId);
+		List<Parameter> parameters = new ArrayList<Parameter>();
+
+		OAuthUtils.addOAuthToken(parameters);
+		parameters.add(new Parameter(
+				OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
+		
+		if (pageNum > 0) {
+			parameters.add(new Parameter("page", pageNum));
+		}
+
+		if (pageSize > 0) {
+			parameters.add(new Parameter("rpp", pageSize));
+		}
+		
+		Response response = transportAPI.getJSON(sharedSecret, path, parameters);
+		if (response.isError()) {
+			throw new J500pxException(response.getErrorMessage());
+		}
+
+		UserList userList = new UserList();
+		userList.setTotalPages(response.getData().getInt("total_pages"));
+		userList.setCurrentPage(response.getData().getInt("current_page"));
+		userList.setTotalItems(response.getData().getInt("total_items"));
+		JSONArray usersObj = response.getData().optJSONArray("users");
+		for (int i = 0; usersObj != null && i < usersObj.length(); i++) {
+			userList.add(UsersInterface.parseUserObject(usersObj.getJSONObject(i)));
+		}
+		return userList;
 	}
 
-	public Comment parseComment(JSONObject commentObj) throws JSONException {
+	public static Comment parseComment(JSONObject commentObj) throws JSONException {
 		Comment comment = new Comment();
+		
 		comment.setId(commentObj.getInt("id"));
 		comment.setComment(commentObj.getString("body"));
 		comment.setToWhomUserId(commentObj.optInt("to_whom_user_id", -1));
@@ -455,7 +551,7 @@ public class PhotosInterface {
 		OAuthUtils.addOAuthToken(parameters);
 
 		final String path = String.format(Locale.US,
-				J500pxConstants.PATH_PHOTO_FAV, photoId);
+				J500pxConstants.PATH_PHOTO_FAVORITE, photoId);
 		Response response = null;
 		if (fav) {
 			response = transportAPI.postJSON(sharedSecret, path, parameters);
@@ -486,7 +582,7 @@ public class PhotosInterface {
 		}
 
 		String path = String.format(Locale.US,
-				J500pxConstants.PATH_PHOTO_COMMENT, photoId);
+				J500pxConstants.PATH_PHOTO_COMMENTS, photoId);
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		parameters.add(new Parameter(OAuthInterface.PARAM_OAUTH_CONSUMER_KEY,
 				apiKey));
