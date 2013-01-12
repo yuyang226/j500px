@@ -74,7 +74,7 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	
 	@Test
 	public void testGetPhotoDetail() throws J500pxException, IOException, JSONException {
-		Photo photo = p.getPhotosInterface().getPhotoDetail("22161277", null, true, -1);
+		Photo photo = p.getPhotosInterface().getPhotoDetail(22161277, null, true, -1);
 		assertNotNull(photo);
 	}
 	
@@ -132,8 +132,8 @@ public class PhotosInterfaceTest extends AbstractJ500pxTest {
 	@Test
 	public void testLikePhoto() throws J500pxException, IOException, JSONException {
 		int photoId = 22151841;
-		p.getPhotosInterface().likePhoto(photoId, true);
 		p.getPhotosInterface().likePhoto(photoId, false);
+		p.getPhotosInterface().likePhoto(photoId, true);
 	}
 	
 	@Test

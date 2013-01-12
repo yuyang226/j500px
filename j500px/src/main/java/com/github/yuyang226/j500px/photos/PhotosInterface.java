@@ -58,12 +58,9 @@ public class PhotosInterface {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public Photo getPhotoDetail(String photoId, ImageSize imageSize,
+	public Photo getPhotoDetail(int photoId, ImageSize imageSize,
 			boolean showComments, int commentsPage) throws J500pxException,
 			IOException, JSONException {
-		if (photoId == null) {
-			throw new IllegalArgumentException("photo id must not be null");
-		}
 		List<Parameter> parameters = new ArrayList<Parameter>();
 		boolean signed = OAuthUtils.hasSigned();
 
@@ -306,7 +303,7 @@ public class PhotosInterface {
 
 		if (signed) {
 			OAuthUtils.addOAuthToken(parameters);
-			parameters.add(new Parameter("include_states","favorited"));
+			parameters.add(new Parameter("include_states","1"));
 			parameters.add(new Parameter(
 					OAuthInterface.PARAM_OAUTH_CONSUMER_KEY, apiKey));
 		} else {
