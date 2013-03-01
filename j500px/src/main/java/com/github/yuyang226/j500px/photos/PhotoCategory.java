@@ -43,7 +43,6 @@ public enum PhotoCategory {
 	
 	private PhotoCategory(int categoryId) {
 		this.categoryId = categoryId;
-		this.categoryName = getClass().getSimpleName();
 	}
 	
 	private PhotoCategory(int categoryId, String categoryName) {
@@ -62,7 +61,7 @@ public enum PhotoCategory {
 	 * @return the categoryName
 	 */
 	public String getCategoryName() {
-		return categoryName;
+		return categoryName == null ? toString() : categoryName;
 	}
 
 	public static PhotoCategory valueOf(int value) {
