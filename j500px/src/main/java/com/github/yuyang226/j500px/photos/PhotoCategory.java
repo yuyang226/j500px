@@ -20,7 +20,7 @@ public enum PhotoCategory {
 	Family(20),
 	Fashion(14),
 	Film(2),
-	FineArt(24),
+	FineArt(24, "Fine Art"),
 	Food(23),
 	Journalism(3),
 	Landscapes(8),
