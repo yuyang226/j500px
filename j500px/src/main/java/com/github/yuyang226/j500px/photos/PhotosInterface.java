@@ -251,7 +251,7 @@ public class PhotosInterface {
 
 	public PhotoList getUserPhotos(GlobalFeatures userFeature, String userId,
 			String userName, SearchSort sort, PhotoCategory categoryOnly,
-			PhotoCategory categoryExclude, ImageSize imageSize, int pageNum,
+			PhotoCategory categoryExclude, ImageSize[] imageSize, int pageNum,
 			int pageSize) throws J500pxException, IOException, JSONException {
 		if (userId == null && userName == null) {
 			throw new IllegalArgumentException(
@@ -272,7 +272,7 @@ public class PhotosInterface {
 
 		return getPhotos(userFeature != null ? userFeature
 				: GlobalFeatures.USER, sort, categoryOnly, categoryExclude,
-				new ImageSize[]{imageSize}, extraParams, false, false, false, pageNum, pageSize);
+				imageSize, extraParams, false, false, false, pageNum, pageSize);
 	}
 
 	/**
@@ -385,7 +385,7 @@ public class PhotosInterface {
 	 * @throws JSONException
 	 * @see http://developer.500px.com/docs/photos-search
 	 */
-	public PhotoList searchPhotos(String term, String tag, boolean showTags, ImageSize imageSize, 
+	public PhotoList searchPhotos(String term, String tag, boolean showTags, ImageSize[] imageSizes, 
 			int pageNum, int pageSize) throws J500pxException, IOException, JSONException {
 		if (term == null && tag == null) {
 			throw new IllegalArgumentException("Both term and tag are null");
@@ -414,8 +414,15 @@ public class PhotosInterface {
 			parameters.add(new Parameter("tags", 1));
 		}
 		
-		if (imageSize != null) {
-			parameters.add(new Parameter("image_size", imageSize.getSize()));
+		if (imageSizes != null) {
+			if (imageSizes.length == 1) {
+				parameters.add(new Parameter("image_size", imageSizes[0].getSize()));
+			} else {
+				//Format: '&image_size[]=3&image_size[]=4'
+				for (ImageSize imageSize : imageSizes) {
+					parameters.add(new Parameter("image_size[]", imageSize.getSize()));
+				}
+			}
 		}
 
 		if (pageNum > 0) {
